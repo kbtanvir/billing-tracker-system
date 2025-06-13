@@ -1,9 +1,4 @@
-import {
-  ApiProperty,
-  IntersectionType,
-  OmitType,
-  PartialType,
-} from '@nestjs/swagger';
+import { ApiProperty, IntersectionType, PartialType } from '@nestjs/swagger';
 import {
   IsDateString,
   IsEnum,
@@ -342,9 +337,7 @@ export class UsageQuery extends IntersectionType(
 ) {}
 
 // ========== Request/Response DTOs ==========
-export class CreateUsageEventDto extends OmitType(UsageEventDto, [
-  'userId',
-] as const) {}
+export class CreateUsageEventDto extends UsageEventDto {}
 export class UpdateUsageEventDto extends PartialType(UsageEventDto) {}
 
 export class GetUserUsageResponse extends IntersectionType(

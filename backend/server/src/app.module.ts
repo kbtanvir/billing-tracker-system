@@ -19,7 +19,7 @@ import { QueueModule } from './modules/queue/queue.module';
 import { RedisModule } from './modules/redis/redis.module';
 import { S3Module } from './modules/s3/s3.module';
 import { SeederModule } from './modules/seed/seeder.module';
-import { UsersModule } from './modules/users/users.module';
+import { UsersModule } from './modules/users/usage.module';
 
 @Module({
   imports: [

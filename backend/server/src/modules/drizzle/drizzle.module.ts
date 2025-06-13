@@ -23,6 +23,6 @@ import * as schema from './schema';
     },
     DrizzleService,
   ],
-  exports: [DrizzleService],
+  exports: [DrizzleService, PG_CONNECTION],
 })
 export class DrizzleModule {}

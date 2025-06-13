@@ -1,0 +1,28 @@
+{
+    "version": "0.2.0",
+    "compounds": [
+        {
+            "name": "dsb",
+            "configurations": [
+                "dsb: Backend",
+            ],
+            "stopAll": true,
+            "presentation": {
+                "hidden": true,
+                "group": "dsb"
+            }
+        },
+    ],
+    "configurations": [
+        {
+            "name": "dsb: Backend",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "pnpm start:dev",
+            "cwd": "${workspaceFolder}/backend/server",
+            "presentation": {
+                "group": "dsb"
+            }
+        },
+    ]
+}

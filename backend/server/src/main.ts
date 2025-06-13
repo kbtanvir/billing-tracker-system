@@ -18,8 +18,6 @@ import { corsOptions } from './config/cors.config';
 import { ConfigService } from './modules/config/config.service';
 import { RedisService } from './modules/redis/redis.service';
 import { setupSwagger } from './swagger';
-import { CommandFactory } from 'nest-commander';
-import { SeederModule } from './modules/seed/seeder.module';
 
 async function bootstrap() {
   const logger = new Logger('Server Startup');
@@ -60,8 +58,6 @@ async function bootstrap() {
   await app.listen(configService.port);
 
   logger.log(`App Started on http://localhost:${configService.port}/api`);
-  
- 
 
   if (module.hot) {
     module.hot.accept();

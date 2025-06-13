@@ -27,7 +27,8 @@ export class UsageService {
   ) {}
 
   // ========== Usage Events ==========
-  async createUsageEvent(userId: string, dto: CreateUsageEventDto) {
+  async createUsageEvent(dto: CreateUsageEventDto) {
+    const userId = dto.userId;
     try {
       // Validate user exists
       const user = await this.usersRepository.findById(userId);

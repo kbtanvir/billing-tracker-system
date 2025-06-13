@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { S3Service } from '../s3/s3.service';
+import { UsageController } from './usage.controller';
 import { UsageRepository } from './usage.repository';
-import { UsageController } from './users.controller';
+import { UsageService } from './usage.service';
 import { UserRepository } from './users.repository';
-import { UsageService } from './users.service';
 
 @Module({
   imports: [],
