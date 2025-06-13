@@ -1,5 +1,5 @@
 {
-  "id": "5dd7cd4a-c8fa-4c92-a849-a1dbac6d6d96",
+  "id": "84e9c6d9-e753-4a5a-861f-bb90883f81bb",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -25,44 +25,43 @@
           "name": "start_date",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "end_date": {
           "name": "end_date",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "total_units": {
           "name": "total_units",
           "type": "numeric(15, 2)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "base_fee": {
           "name": "base_fee",
           "type": "numeric(10, 2)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "overage_fee": {
           "name": "overage_fee",
           "type": "numeric(10, 2)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "total_amount": {
           "name": "total_amount",
           "type": "numeric(10, 2)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "is_paid": {
           "name": "is_paid",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": false,
-          "default": false
+          "notNull": false
         },
         "invoice_id": {
           "name": "invoice_id",
@@ -105,14 +104,14 @@
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "tier": {
           "name": "tier",
           "type": "pricing_tier",
           "typeSchema": "public",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "description": {
           "name": "description",
@@ -124,26 +123,25 @@
           "name": "base_fee",
           "type": "numeric(10, 2)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "included_units": {
           "name": "included_units",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "overage_rate": {
           "name": "overage_rate",
           "type": "numeric(10, 4)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "is_active": {
           "name": "is_active",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": false,
-          "default": true
+          "notNull": false
         }
       },
       "indexes": {},
@@ -173,15 +171,15 @@
           "type": "report_status",
           "typeSchema": "public",
           "primaryKey": false,
-          "notNull": false,
-          "default": "'PENDING'"
+          "notNull": false
         },
         "format": {
           "name": "format",
-          "type": "report_status",
+          "type": "report_format",
           "typeSchema": "public",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false,
+          "default": "'PDF'"
         },
         "start_date": {
           "name": "start_date",
@@ -262,13 +260,13 @@
           "type": "usage_event_type",
           "typeSchema": "public",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "units": {
           "name": "units",
           "type": "numeric(15, 2)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "timestamp": {
           "name": "timestamp",
@@ -293,8 +291,7 @@
           "name": "is_billed",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": false,
-          "default": false
+          "notNull": false
         }
       },
       "indexes": {},
@@ -330,7 +327,8 @@
           "name": "current_period_start",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "now()"
         },
         "current_period_end": {
           "name": "current_period_end",
@@ -342,15 +340,13 @@
           "name": "total_units",
           "type": "numeric(15, 2)",
           "primaryKey": false,
-          "notNull": false,
-          "default": "'0'"
+          "notNull": true
         },
         "last_updated": {
           "name": "last_updated",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
+          "notNull": false
         }
       },
       "indexes": {},
@@ -436,22 +432,19 @@
           "name": "is_verified",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": false,
-          "default": false
+          "notNull": false
         },
         "is_banned": {
           "name": "is_banned",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": false,
-          "default": false
+          "notNull": false
         },
         "is_deleted": {
           "name": "is_deleted",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": false,
-          "default": false
+          "notNull": false
         },
         "fullname": {
           "name": "fullname",
@@ -476,8 +469,7 @@
           "type": "pricing_tier",
           "typeSchema": "public",
           "primaryKey": false,
-          "notNull": false,
-          "default": "'FREE'"
+          "notNull": false
         }
       },
       "indexes": {},

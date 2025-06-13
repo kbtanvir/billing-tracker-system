@@ -1,1 +1,0 @@
-ALTER TABLE "user_usage_summaries" ALTER COLUMN "last_updated" DROP DEFAULT;

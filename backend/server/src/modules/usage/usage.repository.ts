@@ -11,10 +11,8 @@ import {
 import {
   CreateUsageEventDto,
   GenerateReportResponse,
-  GetUserUsageResponse,
   ReportRequestDto,
   ReportStatus,
-  ReportStatusDto,
   UpdateUsageEventDto,
   UsageQuery,
 } from './dto/index.dto';
@@ -90,7 +88,7 @@ export class UsageRepository {
   }
 
   // ========== User Usage Summary ==========
-  async getUserUsageSummary(userId: string): Promise<GetUserUsageResponse> {
+  async getUserUsageSummary(userId: string) {
     // First ensure user usage summary exists
     await this.ensureUserUsageSummaryExists(userId);
 
@@ -104,8 +102,11 @@ export class UsageRepository {
         },
       },
     });
+    const report = await this.db.conn.query.reports.findFirst({
+      where: eq(reports.userId, userId),
+    });
 
-    if (!summary) {
+    if (!summary || !report) {
       throw new Error('User usage summary not found');
     }
 
@@ -137,6 +138,7 @@ export class UsageRepository {
       overageUnits,
       overageFee,
       totalAmount,
+      jobId: report.id,
     };
   }
 
@@ -178,10 +180,10 @@ export class UsageRepository {
       .insert(reports)
       .values({
         userId: dto.userId,
-        format: dto.format as any, // Fix: Cast to proper enum type
+        format: dto.format,
         status: 'PENDING',
-        startDate: dto.startDate ? new Date(dto.startDate) : undefined,
-        endDate: dto.endDate ? new Date(dto.endDate) : undefined,
+        startDate: dto.startDate,
+        endDate: dto.endDate,
       })
       .returning();
 

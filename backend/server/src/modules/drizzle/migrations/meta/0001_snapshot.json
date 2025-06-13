@@ -1,6 +1,6 @@
 {
-  "id": "38c181ef-6bd3-4744-b45e-b78e5f9e60c4",
-  "prevId": "5dd7cd4a-c8fa-4c92-a849-a1dbac6d6d96",
+  "id": "344b434d-3c7f-4131-917d-8afe2d6d0f9a",
+  "prevId": "84e9c6d9-e753-4a5a-861f-bb90883f81bb",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -61,8 +61,7 @@
           "name": "is_paid",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": false,
-          "default": false
+          "notNull": false
         },
         "invoice_id": {
           "name": "invoice_id",
@@ -130,8 +129,7 @@
           "name": "included_units",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false,
-          "default": 0
+          "notNull": false
         },
         "overage_rate": {
           "name": "overage_rate",
@@ -143,8 +141,7 @@
           "name": "is_active",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": false,
-          "default": true
+          "notNull": false
         }
       },
       "indexes": {},
@@ -171,18 +168,16 @@
         },
         "status": {
           "name": "status",
-          "type": "report_status",
-          "typeSchema": "public",
+          "type": "text",
           "primaryKey": false,
-          "notNull": false,
-          "default": "'PENDING'"
+          "notNull": false
         },
         "format": {
           "name": "format",
-          "type": "report_format",
-          "typeSchema": "public",
+          "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "default": "'PDF'"
         },
         "start_date": {
           "name": "start_date",
@@ -294,8 +289,7 @@
           "name": "is_billed",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": false,
-          "default": false
+          "notNull": false
         }
       },
       "indexes": {},
@@ -331,28 +325,26 @@
           "name": "current_period_start",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "now()"
         },
         "current_period_end": {
           "name": "current_period_end",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "total_units": {
           "name": "total_units",
           "type": "numeric(15, 2)",
           "primaryKey": false,
-          "notNull": true,
-          "default": "'0'"
+          "notNull": true
         },
         "last_updated": {
           "name": "last_updated",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
+          "notNull": false
         }
       },
       "indexes": {},
@@ -438,22 +430,19 @@
           "name": "is_verified",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": false,
-          "default": false
+          "notNull": false
         },
         "is_banned": {
           "name": "is_banned",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": false,
-          "default": false
+          "notNull": false
         },
         "is_deleted": {
           "name": "is_deleted",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": false,
-          "default": false
+          "notNull": false
         },
         "fullname": {
           "name": "fullname",
@@ -478,8 +467,7 @@
           "type": "pricing_tier",
           "typeSchema": "public",
           "primaryKey": false,
-          "notNull": false,
-          "default": "'FREE'"
+          "notNull": false
         }
       },
       "indexes": {},
@@ -505,25 +493,6 @@
         "BASIC",
         "PRO",
         "ENTERPRISE"
-      ]
-    },
-    "public.report_format": {
-      "name": "report_format",
-      "schema": "public",
-      "values": [
-        "PDF",
-        "CSV",
-        "JSON"
-      ]
-    },
-    "public.report_status": {
-      "name": "report_status",
-      "schema": "public",
-      "values": [
-        "PENDING",
-        "PROCESSING",
-        "COMPLETED",
-        "FAILED"
       ]
     },
     "public.usage_event_type": {

@@ -15,7 +15,7 @@ import {
   CreateUsageEventDto,
   GenerateReportResponse,
   GetUserUsageResponse,
-  ReportRequestDto,
+  ReportRequestBodyDto,
   UsageQuery,
 } from './dto/index.dto';
 import { UsageService } from './usage.service';
@@ -29,7 +29,7 @@ export class UsageController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Submit a usage event' })
   async createUsageEvent(@Body() dto: CreateUsageEventDto) {
-    return await this.usageService.createUsageEvent( dto);
+    return await this.usageService.createUsageEvent(dto);
   }
 
   @Get(':userId')
@@ -51,7 +51,7 @@ export class UsageController {
   @ApiOperation({ summary: 'Generate a usage report (async)' })
   async generateReport(
     @Param('userId') userId: string,
-    @Body() dto: ReportRequestDto,
+    @Body() dto: ReportRequestBodyDto,
   ): Promise<GenerateReportResponse> {
     return await this.usageService.generateReport({
       ...dto,

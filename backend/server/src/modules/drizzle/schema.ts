@@ -19,13 +19,13 @@ export const pricingTierEnum = pgEnum('pricing_tier', [
   'PRO',
   'ENTERPRISE',
 ]);
-export const reportStatusEnum = pgEnum('report_status', [
-  'PENDING',
-  'PROCESSING',
-  'COMPLETED',
-  'FAILED',
-]);
-export const reportFormatEnum = pgEnum('report_format', ['PDF', 'CSV', 'JSON']);
+// export const reportStatusEnum = pgEnum('report_status', [
+//   'PENDING',
+//   'PROCESSING',
+//   'COMPLETED',
+//   'FAILED',
+// ]);
+// export const reportFormatEnum = pgEnum('report_format', ['PDF', 'CSV', 'JSON']);
 export const usageEventTypeEnum = pgEnum('usage_event_type', [
   'API_CALL',
   'STORAGE',
@@ -102,10 +102,14 @@ export const billingPlans = createTable('billing_plans', {
 export const reports = createTable('reports', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id').references(() => users.id),
-  status: reportStatusEnum('status'),
-  format: reportFormatEnum('format'),
-  startDate: timestamp('start_date'),
-  endDate: timestamp('end_date'),
+  status: text('status'),
+  format: text('format').default('PDF'),
+  startDate: timestamp('start_date', {
+    mode: 'string',
+  }),
+  endDate: timestamp('end_date', {
+    mode: 'string',
+  }),
   createdAt: timestamp('created_at').defaultNow(),
   completedAt: timestamp('completed_at'),
   filePath: text('file_path'),

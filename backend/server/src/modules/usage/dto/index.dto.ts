@@ -1,4 +1,9 @@
-import { ApiProperty, IntersectionType, PartialType } from '@nestjs/swagger';
+import {
+  ApiProperty,
+  IntersectionType,
+  OmitType,
+  PartialType,
+} from '@nestjs/swagger';
 import {
   IsDateString,
   IsEnum,
@@ -221,7 +226,9 @@ export class ReportRequestDto {
   @IsOptional()
   endDate?: string;
 }
-
+export class ReportRequestBodyDto extends OmitType(ReportRequestDto, [
+  'userId',
+]) {}
 export class ReportStatusDto {
   @ApiProperty({
     description: 'Report job ID',

@@ -1,7 +1,7 @@
 import { InjectQueue } from '@nestjs/bull';
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Queue } from 'bull';
-import { ReportFormat } from '../users/dto/index.dto';
+import { ReportFormat } from '../usage/dto/index.dto';
 
 @Injectable()
 export class QueueService implements OnModuleInit {

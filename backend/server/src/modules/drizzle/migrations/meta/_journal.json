@@ -5,57 +5,15 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1749806844599,
-      "tag": "0000_salty_owl",
+      "when": 1749832180982,
+      "tag": "0000_high_william_stryker",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1749808973485,
-      "tag": "0001_silent_maverick",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1749808983733,
-      "tag": "0002_happy_raider",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1749808994422,
-      "tag": "0003_unusual_shotgun",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1749809030818,
-      "tag": "0004_blushing_solo",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1749809406757,
-      "tag": "0005_melodic_mandarin",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1749809493676,
-      "tag": "0006_yielding_madripoor",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1749811951665,
-      "tag": "0007_conscious_norman_osborn",
+      "when": 1749832445760,
+      "tag": "0001_red_vermin",
       "breakpoints": true
     }
   ]

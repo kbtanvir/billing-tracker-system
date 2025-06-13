@@ -73,7 +73,7 @@ docker ps --format "table {{.ID}}	{{.Ports}}	{{.CreatedAt}}	{{.Status}}"
 ## API and Consoles
 
 - API Documentation: [http://localhost:8080/docs](http://localhost:8080/docs)
-- MinIO Console: [http://localhost:9101](http://localhost:9101)
+- MinIO Console: [http://localhost:9111](http://localhost:9111)
 - NPM Console: [http://localhost:81](http://localhost:81)
 
 ## Deployment
