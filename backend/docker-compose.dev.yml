@@ -1,0 +1,85 @@
+x-default-resources: &default-resources
+  deploy:
+    resources:
+      limits:
+        cpus: '1'
+        memory: 256M
+      reservations:
+        cpus: '0.5'
+        memory: 120M
+  restart: unless-stopped
+  networks:
+    - network
+
+services:
+  # server:
+  #   <<: *default-resources 
+  #   container_name: ${CONTAINER_PREFIX}_server
+  #   build:
+  #     context: ./server
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 8081:8080
+  #   networks:
+  #     - network
+  #   depends_on:
+  #     redis:
+  #       condition: service_healthy
+
+  db:
+    <<: *default-resources 
+    image: postgres:16-alpine
+    container_name: ${CONTAINER_PREFIX}_postgres
+    ports:
+      - ${POSTGRES_PORT}:5432
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USERNAME} -d ${POSTGRES_DB} -t 1",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
+
+  redis:
+    <<: *default-resources 
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 520M
+    container_name: ${CONTAINER_PREFIX}_redis
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    image: redis:7.2.6-alpine
+    ports:
+      - 6377:6377
+    volumes:
+      - redis-data:/data
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: [
+        "redis-server",
+        "/usr/local/etc/redis/redis.conf",
+      ]
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 5s
+    
+ 
+networks:
+  network:
+    name: ${CONTAINER_PREFIX}
+    driver: bridge
+volumes:
+  redis-data:
+    name: ${CONTAINER_PREFIX}_redis
+  pg_data:
+    name: ${CONTAINER_PREFIX}_postgres

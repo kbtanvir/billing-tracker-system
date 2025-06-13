@@ -1,0 +1,26 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": "../",
+  "testRegex": ".e2e-spec.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "moduleNameMapper": {
+    "^src/(.*)$": "<rootDir>/src/$1"
+  },
+  "testEnvironment": "node",
+  "paths": {
+    "@app": ["./src"],
+    "@app/*": ["./src/*"],
+    "@app/const": ["./src/common/constant"],
+    "@app/const/*": ["./src/common/constant/*"],
+    "@app/config": ["./src/modules/config"],
+    "@app/config/*": ["./src/modules/config/*"],
+    "@app/decorators": ["./src/common/decorators"],
+    "@app/decorators/*": ["./src/common/decorators/*"],
+    "@app/enum": ["./src/common/enum"],
+    "@app/enum/*": ["./src/common/enum/*"],
+    "@app/utils": ["libs/utils/src"],
+    "@app/utils/*": ["libs/utils/src/*"]
+  }
+}
