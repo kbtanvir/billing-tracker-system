@@ -7,6 +7,7 @@ import {
   GenerateReportResponse,
   ReportFormat,
   ReportRequestDto,
+  ReportStatus,
   UpdateUsageEventDto,
   UsageQuery,
 } from './dto/index.dto';
@@ -98,11 +99,25 @@ export class UsageService {
     }
   }
 
+  async updateReportStatus(
+    jobId: string,
+    status: ReportStatus,
+    filePath?: string,
+    error?: string,
+  ) {
+    return await this.repository.updateReportStatus(
+      jobId,
+      status,
+      filePath,
+      error,
+    );
+  }
   // ========== Reports ==========
   async generateReport(dto: ReportRequestDto): Promise<GenerateReportResponse> {
     try {
       // Validate user exists
       const user = await this.usersRepository.findById(dto.userId);
+
       if (!user) {
         throw new Error(`User ${dto.userId} not found`);
       }
@@ -186,7 +201,7 @@ export class UsageService {
       );
 
       // Generate download URL (adjust based on your S3 configuration)
-      const downloadUrl = `${this.configService.s3.domainName}/${this.configService.s3.bucketId}/${s3Key}`;
+      const downloadUrl = `${this.configService.s3.endpoint}/${this.configService.s3.bucketId}/${s3Key}`;
 
       // Update status to completed
       await this.repository.updateReportStatus(jobId, 'COMPLETED', downloadUrl);

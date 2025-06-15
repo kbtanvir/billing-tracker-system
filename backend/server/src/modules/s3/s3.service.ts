@@ -19,14 +19,6 @@ import { ConfigService } from '../config/config.service';
 
 const pipelineAsync = promisify(pipeline);
 
-// interface FileData {
-//   id: string;
-//   name: string;
-//   isDir: boolean;
-//   path?: string;
-//   modDate?: Date;
-//   size?: number;
-// }
 export interface UploadFile {
   file: File;
   path: string;

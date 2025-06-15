@@ -28,8 +28,7 @@
     "db:push": "pnpm db:generate && drizzle-kit push",
     "db:studio": "npx drizzle-kit studio",
     "migrate:run": "npx ts-node src/modules/drizzle/run-migrations.ts",
-    "seed:usage-test": "nest start --entryFile seeder -- seed:usage-test",
-    "seed:clear": "nest start --entryFile seeder -- clear:usage-test"
+    "seed": "nest start --entryFile seeder -- seed:usage-test"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.669.0",

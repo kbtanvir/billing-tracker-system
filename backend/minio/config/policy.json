@@ -8,7 +8,7 @@
                 "s3:GetObject"
             ],
             "Resource": [
-                "arn:aws:s3:::billingsystem/*"
+                "arn:aws:s3:::public/*"
             ],
             "Condition": {
                 "StringEquals": {

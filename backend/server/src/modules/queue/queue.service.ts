@@ -2,7 +2,6 @@ import { InjectQueue } from '@nestjs/bull';
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Queue } from 'bull';
 import { ReportFormat } from '../usage/dto/index.dto';
-import { UsageRepository } from '../usage/usage.repository';
 
 @Injectable()
 export class QueueService implements OnModuleInit {
@@ -11,7 +10,6 @@ export class QueueService implements OnModuleInit {
   constructor(
     @InjectQueue('usage-reports') private readonly reportQueue: Queue,
     @InjectQueue('billing-jobs') private readonly billingQueue: Queue,
-    private readonly usageRepo: UsageRepository,
   ) {}
 
   onModuleInit() {
@@ -71,7 +69,6 @@ export class QueueService implements OnModuleInit {
     });
 
     // Update status to QUEUED when job is first added
-    await this.usageRepo.updateReportStatus(payload.jobId, 'PROCESSING');
 
     this.logger.log(`Report job ${job.id} queued for user ${payload.userId}`);
     return job.id;

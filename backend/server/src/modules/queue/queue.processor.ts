@@ -3,12 +3,13 @@ import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
 import { ReportFormat } from '../usage/dto/index.dto';
 import { UsageRepository } from '../usage/usage.repository';
+import { UsageService } from '../usage/usage.service';
 
 @Processor('usage-reports')
 export class ReportProcessor {
   private readonly logger = new Logger(ReportProcessor.name);
 
-  constructor(private readonly usageRepository: UsageRepository) {}
+  constructor(private readonly usageService: UsageService) {}
 
   @Process('generate-report')
   async handleReportGeneration(
@@ -23,12 +24,11 @@ export class ReportProcessor {
     this.logger.log(`Starting report generation job ${job.id}`);
 
     try {
+      await this.usageService.updateReportStatus(job.data.jobId, 'PROCESSING');
       // Generate the report here
+      await this.usageService.processReportJob(job.data.jobId);
 
-      await this.usageRepository.updateReportStatus(
-        job.data.jobId,
-        'COMPLETED',
-      );
+      await this.usageService.updateReportStatus(job.data.jobId, 'COMPLETED');
       // Store the report file
 
       this.logger.warn(`Report generated successfully for job ${job.id}`);

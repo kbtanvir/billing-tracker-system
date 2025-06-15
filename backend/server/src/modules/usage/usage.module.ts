@@ -8,7 +8,7 @@ import { UserRepository } from './users.repository';
 @Module({
   imports: [],
   controllers: [UsageController],
-  providers: [UserRepository, UsageService, UsageRepository, S3Service],
-  exports: [UsageService],
+  providers: [UserRepository, S3Service, UsageService, UsageRepository],
+  exports: [UsageService, UsageRepository],
 })
 export class UsageModule {}

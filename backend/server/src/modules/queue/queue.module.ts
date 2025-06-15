@@ -3,7 +3,6 @@ import { Global, Module } from '@nestjs/common';
 import Redis from 'ioredis';
 import { QueueService } from './queue.service';
 import { UsageModule } from '../usage/usage.module';
-import { UsageRepository } from '../usage/usage.repository';
 import { BillingProcessor, ReportProcessor } from './queue.processor';
 
 @Global()
@@ -39,7 +38,7 @@ import { BillingProcessor, ReportProcessor } from './queue.processor';
     QueueService,
     ReportProcessor,
     BillingProcessor,
-    UsageRepository,
+    // UsageService,
   ],
   exports: [QueueService, 'REDIS_CLIENT'],
 })

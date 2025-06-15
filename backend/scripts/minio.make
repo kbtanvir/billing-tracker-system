@@ -34,4 +34,4 @@ mc.ls:
 	$(COMPOSE) exec mc mc ls s3
 
 mc.ls.bucket:
-	$(COMPOSE) exec mc mc ls s3/billingsystem
+	$(COMPOSE) exec mc mc ls s3/public

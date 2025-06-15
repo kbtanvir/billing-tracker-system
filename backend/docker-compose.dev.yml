@@ -75,49 +75,50 @@ services:
       retries: 3
       start_period: 30s
       
-  # minio:
-  #   <<: *default-resources 
-  #   image: minio/minio:latest
-  #   container_name: ${CONTAINER_PREFIX}_minio
-  #   ports:
-  #     - "9110:9000"
-  #     - "9111:9001"
-  #   volumes:
-  #     - minio-data:/data
-  #   environment:
-  #     MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-  #     MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-  #   command: server /data --console-address ":9001"
-  #   healthcheck:
-  #     test: ["CMD", "mc", "ready", "local"]
-  #     interval: 30s
-  #     timeout: 20s
-  #     retries: 3
-  #     start_period: 10s
-  # minio-cli:
-  #   <<: *default-resources 
-  #   image: minio/mc:latest
-  #   container_name: ${CONTAINER_PREFIX}_minio_cli
-  #   build:
-  #     context: ./minio
-  #     dockerfile: Dockerfile
-  #   depends_on:
-  #     minio:
-  #       condition: service_healthy
-  #   environment:
-  #     MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-  #     MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-  #     S3_BUCKET_ID: ${S3_BUCKET_ID}
-  #   volumes:
-  #     # - ./minio/entrypoint.sh:/usr/local/bin/entrypoint.sh
-  #     - ./minio/config/policy.json:/tmp/policy.json     
+  minio:
+    <<: *default-resources 
+    image: minio/minio:latest
+    container_name: ${CONTAINER_PREFIX}_minio
+    ports:
+      - "9110:9000"
+      - "9111:9001"
+    volumes:
+      - minio-data:/data
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+      start_period: 10s
+  minio-cli:
+    <<: *default-resources 
+    image: minio/mc:latest
+    container_name: ${CONTAINER_PREFIX}_minio_cli
+    build:
+      context: ./minio
+      dockerfile: Dockerfile
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      S3_BUCKET_ID: ${S3_BUCKET_ID}
+      S3_ENDPOINT: "http://minio:9000"
+    volumes:
+      # - ./minio/entrypoint.sh:/usr/local/bin/entrypoint.sh
+      - ./minio/config/policy.json:/tmp/policy.json     
 networks:
   network:
     name: ${CONTAINER_PREFIX}
     driver: bridge
 volumes:  
-  # minio-data:
-  #   name: ${CONTAINER_PREFIX}_minio
+  minio-data:
+    name: ${CONTAINER_PREFIX}_minio
   redis-data:
     name: ${CONTAINER_PREFIX}_redis
   pg_data:

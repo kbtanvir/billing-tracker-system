@@ -20,10 +20,8 @@ echo "MinIO is ready"
 echo "Creating and configuring bucket..."
 # Create bucket
 /usr/bin/mc mb --ignore-existing s3/${S3_BUCKET_ID}
-/usr/bin/mc mb --ignore-existing s3/cdn
 
 /usr/bin/mc anonymous set download s3/${S3_BUCKET_ID}
-/usr/bin/mc anonymous set download s3/cdn
 
 /usr/bin/mc anonymous set-json /tmp/policy.json s3/${S3_BUCKET_ID}
  

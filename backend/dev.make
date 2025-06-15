@@ -1,12 +1,9 @@
-COMPOSE := docker compose -f docker-compose.dev.yml --env-file $(CURDIR)/server/.env.docker
+COMPOSE := docker compose -f docker-compose.dev.yml --env-file $(CURDIR)/server/.env
 CONTAINER_PREFIX := billing_system
 DOCKER_USERNAME := billingsystemapp
 
 
 include $(CURDIR)/scripts/postgres.make
-include $(CURDIR)/scripts/tasks.make
-include $(CURDIR)/scripts/stripe.make
-include $(CURDIR)/scripts/network.make
 include $(CURDIR)/scripts/redis.make
 include $(CURDIR)/scripts/minio.make
 include $(CURDIR)/scripts/minio.cli.make
