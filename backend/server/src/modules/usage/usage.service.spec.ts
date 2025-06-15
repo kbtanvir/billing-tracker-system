@@ -11,7 +11,7 @@ import {
   UsageQuery,
 } from './dto/index.dto';
 
-describe('UsageService Complete Flow', () => {
+describe('Complete Flow', () => {
   let service: UsageService;
   let mockQueueService: Partial<QueueService>;
   let mockS3Service: Partial<S3Service>;
