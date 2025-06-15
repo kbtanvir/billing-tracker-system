@@ -13,6 +13,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      
       - name: Navigate to project directory
         run: cd backend/server  # Assuming your NestJS project is in the 'backend' folder
         shell: bash
