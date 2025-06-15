@@ -11,13 +11,13 @@ jobs:
     name: Run Focused Tests
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: ./backend/server
+
     steps:
       - uses: actions/checkout@v3
       
-      - name: Navigate to project directory
-        run: cd backend/server  # Assuming your NestJS project is in the 'backend' folder
-        shell: bash
-            
       - name: Set up pnpm
         uses: pnpm/action-setup@v2
         with:
@@ -28,17 +28,16 @@ jobs:
         with:
           node-version: 18
           cache: 'pnpm'
+          cache-dependency-path: 'backend/server/pnpm-lock.yaml'
           
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       
-      # Run only the billing calculation unit tests
       - name: Run Billing Unit Tests
         run: pnpm test -- usage.service.spec.ts --testNamePattern="Billing Calculations"
         env:
           TEST_FOCUS: 'unit'
       
-      # Run only the async workflow integration tests  
       - name: Run Integration Tests
         run: pnpm test -- usage.integration.spec.ts --testNamePattern="Complete Flow"
         env:
@@ -48,6 +47,10 @@ jobs:
     name: Lint and Format Check
     runs-on: ubuntu-latest
     
+    defaults:
+      run:
+        working-directory: ./backend/server
+
     steps:
       - uses: actions/checkout@v3
       
@@ -61,6 +64,7 @@ jobs:
         with:
           node-version: 18
           cache: 'pnpm'
+          cache-dependency-path: 'backend/server/pnpm-lock.yaml'
       
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
