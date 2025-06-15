@@ -8,10 +8,6 @@ export function corsOptions(redisService: RedisService) {
       origin: string,
       callback: (err: Error | null, allow?: boolean) => void,
     ) => {
-      // TODO: make it dynamic when creating a project
-      // await redisService.addAllowedOrigin(
-      //   'http://cayon-1743496493310.localhost',
-      // );
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
 
@@ -38,9 +34,8 @@ export function corsOptions(redisService: RedisService) {
     },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
-    // Additional recommended options
     preflightContinue: false,
     optionsSuccessStatus: 204,
-    maxAge: 86400, // 24 hours
+    maxAge: 86400,
   };
 }

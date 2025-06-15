@@ -76,7 +76,7 @@ export const userUsageSummaries = createTable('user_usage_summaries', {
     .references(() => users.id, {
       onDelete: 'cascade',
     }),
-  currentPeriodStart: timestamp('current_period_start').notNull().defaultNow(),
+  currentPeriodStart: timestamp('current_period_start').notNull(),
   currentPeriodEnd: timestamp('current_period_end').notNull(),
   totalUnits: numeric('total_units', { precision: 15, scale: 2 }).notNull(),
   lastUpdated: timestamp('last_updated').$onUpdate(() => new Date()),
@@ -94,13 +94,13 @@ export const billingPlans = createTable('billing_plans', {
   isActive: boolean('is_active'),
 });
 
-// Reports - Fixed format field to use correct enum
 export const reports = createTable('reports', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id').references(() => users.id, {
     onDelete: 'cascade',
   }),
-  status: text('status'),
+  jobId: text('jobId'),
+  status: text('status').default('PENDING'),
   format: text('format').default('PDF'),
   startDate: timestamp('start_date'),
   endDate: timestamp('end_date'),

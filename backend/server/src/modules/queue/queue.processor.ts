@@ -24,7 +24,12 @@ export class ReportProcessor {
     this.logger.log(`Starting report generation job ${job.id}`);
 
     try {
-      await this.usageService.updateReportStatus(job.data.jobId, 'PROCESSING');
+      await this.usageService.addJobReport({
+        jobId: job.data.jobId,
+        userId: job.data.userId,
+        format: 'PDF',
+      });
+
       // Generate the report here
       await this.usageService.processReportJob(job.data.jobId);
 
@@ -48,13 +53,12 @@ export class BillingProcessor {
   constructor(private readonly usageRepository: UsageRepository) {}
 
   @Process('process-billing-period')
-  handleBillingPeriod(job: Job<{ userId: string }>) {
+  async handleBillingPeriod(job: Job<{ userId: string }>) {
     this.logger.log(
       `Starting billing processing job ${job.id} for user ${job.data.userId}`,
     );
 
     try {
-      this.logger.log(`Invoice generated successfully for job ${job.id}`);
     } catch (error: any) {
       this.logger.error(
         `Billing processing failed for job ${job.id}: ${error.message}`,

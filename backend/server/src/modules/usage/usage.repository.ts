@@ -20,6 +20,18 @@ import {
 export class UsageRepository {
   constructor(private readonly db: DrizzleService) {}
 
+  async ping(): Promise<boolean> {
+    try {
+      const result = await this.db.conn.execute<{ one: number }>(
+        sql`SELECT 1 as one`,
+      );
+      return result.rows[0]?.one === 1;
+    } catch (error) {
+      console.error('Database ping failed:', error);
+      return false;
+    }
+  }
+
   // ========== Usage Events ==========
   async createUsageEvent(dto: CreateUsageEventDto & { userId: string }) {
     const [event] = await this.db.conn
@@ -145,12 +157,14 @@ export class UsageRepository {
     const exists = await this.db.conn.query.userUsageSummaries.findFirst({
       where: eq(userUsageSummaries.userId, userId),
     });
+    const summary = await this.getUserUsageSummary(userId);
 
     if (!exists) {
       await this.db.conn
         .insert(userUsageSummaries)
         .values({
           userId,
+          currentPeriodStart: summary.currentPeriodStart,
           currentPeriodEnd: this.getNextPeriodEndDate(),
           totalUnits: '0',
         })
@@ -181,12 +195,12 @@ export class UsageRepository {
       })
       .returning();
 
-    return { jobId: report.id };
+    return { jobId: report.jobId };
   }
 
   async getReportStatus(jobId: string) {
     const report = await this.db.conn.query.reports.findFirst({
-      where: eq(reports.id, jobId),
+      where: eq(reports.jobId, jobId),
     });
 
     if (!report) {
@@ -213,7 +227,7 @@ export class UsageRepository {
             ? new Date()
             : undefined,
       })
-      .where(eq(reports.id, jobId))
+      .where(eq(reports.jobId, jobId))
       .execute();
   }
 
@@ -228,30 +242,46 @@ export class UsageRepository {
       throw new Error('Billing plan not found');
     }
 
+    // Calculate billing details
+    const includedUnits = Number(billingPlan.includedUnits);
+    const usedUnits = Number(summary.totalUnits);
+    const overageUnits = Math.max(0, usedUnits - includedUnits);
+    const overageFee = overageUnits * Number(billingPlan.overageRate);
+    const totalAmount = Number(billingPlan.baseFee) + overageFee;
+
     const [period] = await this.db.conn
       .insert(billingPeriods)
       .values({
         userId,
         startDate: summary.currentPeriodStart,
         endDate: summary.currentPeriodEnd,
-        totalUnits: summary.totalUnits, // Ensure numeric is string
+        totalUnits: summary.totalUnits,
         baseFee: billingPlan.baseFee,
-        overageFee: summary.overageFee, // Convert to string
-        totalAmount: summary.totalAmount, // Convert to string
+        overageFee: overageFee.toString(),
+        totalAmount: totalAmount.toString(),
       })
       .returning();
 
-    // Reset the user's usage summary for new period
+    // Reset usage for new period
     await this.db.conn
       .update(userUsageSummaries)
       .set({
+        currentPeriodStart: summary.currentPeriodEnd,
         currentPeriodEnd: this.getNextPeriodEndDate(),
-        totalUnits: '0', // Reset as string
+        totalUnits: '0',
       })
       .where(eq(userUsageSummaries.userId, userId))
       .execute();
 
-    return period;
+    return {
+      success: true,
+      invoiceId: period.id,
+      totalAmount,
+      overageFee,
+      baseFee: Number(billingPlan.baseFee),
+      usedUnits,
+      includedUnits,
+    };
   }
 
   private getNextPeriodEndDate(): Date {

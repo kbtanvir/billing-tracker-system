@@ -4,7 +4,6 @@ import { QueueService } from '../queue/queue.service';
 import { S3Service } from '../s3/s3.service';
 import {
   CreateUsageEventDto,
-  GenerateReportResponse,
   ReportFormat,
   ReportRequestDto,
   ReportStatus,
@@ -85,16 +84,10 @@ export class UsageService {
 
   async generateMonthlyBilling(userId: string) {
     try {
-      // Create billing period and reset usage
       const period = await this.repository.createBillingPeriod(userId);
-
-      // TODO: Add invoice generation logic here
-      this.logger.log(`Generated billing period for user ${userId}`);
-      // Queue the report generation
       await this.queueService.addBillingPeriodJob(userId);
       return period;
     } catch (error: any) {
-      this.logger.error(`Failed to generate billing: ${error.message}`);
       throw error;
     }
   }
@@ -112,8 +105,11 @@ export class UsageService {
       error,
     );
   }
+  async addJobReport(dto: ReportRequestDto) {
+    return await this.repository.createReportJob(dto);
+  }
   // ========== Reports ==========
-  async generateReport(dto: ReportRequestDto): Promise<GenerateReportResponse> {
+  async generateReport(dto: ReportRequestDto) {
     try {
       // Validate user exists
       const user = await this.usersRepository.findById(dto.userId);
@@ -123,18 +119,19 @@ export class UsageService {
       }
 
       // Create report job
-      const response = await this.repository.createReportJob(dto);
 
       // Queue the report generation
-      await this.queueService.addReportJob({
-        jobId: response.jobId,
+      const jobId = await this.queueService.addReportJob({
+        jobId: null,
         userId: dto.userId,
         format: dto.format,
         startDate: dto.startDate,
         endDate: dto.endDate,
       });
 
-      return response;
+      return {
+        jobId,
+      };
     } catch (error: any) {
       this.logger.error(`Failed to start report generation: ${error.message}`);
       throw error;
@@ -290,12 +287,13 @@ export class UsageService {
   async healthCheck() {
     try {
       // Check database connection
-      await this.repository.getUserById('test'); // Just testing connection
+      await this.repository.ping();
 
       // Check Redis connection
       await this.queueService.ping();
 
       // Check storage connection
+      await this.s3Service.ping();
 
       return {
         status: 'OK',

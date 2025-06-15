@@ -191,6 +191,15 @@ export class ReportRequestDto {
     description: 'User ID for the report',
     example: '95b347fc-e6e9-4753-b4a5-b617f4cc5211',
   })
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  jobId?: string;
+
+  @ApiProperty({
+    description: 'User ID for the report',
+    example: '95b347fc-e6e9-4753-b4a5-b617f4cc5211',
+  })
   @IsUUID()
   @IsNotEmpty()
   userId: string;

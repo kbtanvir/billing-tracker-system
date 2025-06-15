@@ -4,6 +4,7 @@ import {
   GetObjectCommand,
   GetObjectTaggingCommand,
   HeadObjectCommand,
+  ListBucketsCommand,
   ListObjectsV2Command,
   PutObjectCommand,
   PutObjectTaggingCommand,
@@ -13,9 +14,9 @@ import { Upload } from '@aws-sdk/lib-storage';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as archiver from 'archiver';
 import { pipeline, Readable } from 'stream';
-import { site404, sitePlaceholder } from 'template';
 import { promisify } from 'util';
 import { ConfigService } from '../config/config.service';
+import { sitePlaceholder, site404 } from '../../../template';
 
 const pipelineAsync = promisify(pipeline);
 
@@ -40,6 +41,16 @@ export class S3Service {
       },
       forcePathStyle: true,
     });
+  }
+
+  async ping(): Promise<boolean> {
+    try {
+      await this.s3Client.send(new ListBucketsCommand({}));
+      return true;
+    } catch (error) {
+      console.error('S3 ping failed:', error);
+      return false;
+    }
   }
 
   async getCurrentBucketSize(userId: string): Promise<number> {
