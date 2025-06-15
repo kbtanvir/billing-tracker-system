@@ -2,6 +2,7 @@ import { InjectQueue } from '@nestjs/bull';
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Queue } from 'bull';
 import { ReportFormat } from '../usage/dto/index.dto';
+import { UsageRepository } from '../usage/usage.repository';
 
 @Injectable()
 export class QueueService implements OnModuleInit {
@@ -10,6 +11,7 @@ export class QueueService implements OnModuleInit {
   constructor(
     @InjectQueue('usage-reports') private readonly reportQueue: Queue,
     @InjectQueue('billing-jobs') private readonly billingQueue: Queue,
+    private readonly usageRepo: UsageRepository,
   ) {}
 
   onModuleInit() {
@@ -39,7 +41,11 @@ export class QueueService implements OnModuleInit {
       const billingQueueCounts = await this.billingQueue.getJobCounts();
 
       // If we get counts without error, connection is healthy
-      this.logger.debug('Queue service ping successful');
+      this.logger.debug(
+        'Queue service ping successful',
+        reportQueueCounts,
+        billingQueueCounts,
+      );
       return true;
     } catch (error: any) {
       this.logger.error('Queue service ping failed', error.message);
@@ -51,18 +57,21 @@ export class QueueService implements OnModuleInit {
     jobId: string;
     userId: string;
     format: ReportFormat;
-    startDate?: string;
-    endDate?: string;
+    startDate?: Date;
+    endDate?: Date;
   }) {
     const job = await this.reportQueue.add('generate-report', payload, {
       attempts: 3,
       backoff: {
         type: 'exponential',
-        delay: 5000, // 5s, 10s, 20s
+        delay: 5000,
       },
       removeOnComplete: true,
       removeOnFail: true,
     });
+
+    // Update status to QUEUED when job is first added
+    await this.usageRepo.updateReportStatus(payload.jobId, 'PROCESSING');
 
     this.logger.log(`Report job ${job.id} queued for user ${payload.userId}`);
     return job.id;

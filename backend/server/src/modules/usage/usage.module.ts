@@ -11,4 +11,4 @@ import { UserRepository } from './users.repository';
   providers: [UserRepository, UsageService, UsageRepository, S3Service],
   exports: [UsageService],
 })
-export class UsersModule {}
+export class UsageModule {}

@@ -58,7 +58,9 @@ export const users = createTable('user', {
 // Usage Events - Core table for tracking usage
 export const usageEvents = createTable('usage_events', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id').references(() => users.id),
+  userId: uuid('user_id').references(() => users.id, {
+    onDelete: 'cascade',
+  }),
   eventType: usageEventTypeEnum('event_type'),
   units: numeric('units', { precision: 15, scale: 2 }),
   timestamp: timestamp('timestamp').defaultNow(),
@@ -71,19 +73,13 @@ export const usageEvents = createTable('usage_events', {
 export const userUsageSummaries = createTable('user_usage_summaries', {
   userId: uuid('user_id')
     .primaryKey()
-    .references(() => users.id),
-  currentPeriodStart: timestamp('current_period_start', {
-    mode: 'string',
-  })
-    .notNull()
-    .defaultNow(),
-  currentPeriodEnd: timestamp('current_period_end', {
-    mode: 'string',
-  }).notNull(),
+    .references(() => users.id, {
+      onDelete: 'cascade',
+    }),
+  currentPeriodStart: timestamp('current_period_start').notNull().defaultNow(),
+  currentPeriodEnd: timestamp('current_period_end').notNull(),
   totalUnits: numeric('total_units', { precision: 15, scale: 2 }).notNull(),
-  lastUpdated: timestamp('last_updated', {
-    mode: 'string',
-  }).$onUpdate(() => new Date().toISOString()),
+  lastUpdated: timestamp('last_updated').$onUpdate(() => new Date()),
 });
 
 // Billing Plans
@@ -101,15 +97,13 @@ export const billingPlans = createTable('billing_plans', {
 // Reports - Fixed format field to use correct enum
 export const reports = createTable('reports', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id').references(() => users.id),
+  userId: uuid('user_id').references(() => users.id, {
+    onDelete: 'cascade',
+  }),
   status: text('status'),
   format: text('format').default('PDF'),
-  startDate: timestamp('start_date', {
-    mode: 'string',
-  }),
-  endDate: timestamp('end_date', {
-    mode: 'string',
-  }),
+  startDate: timestamp('start_date'),
+  endDate: timestamp('end_date'),
   createdAt: timestamp('created_at').defaultNow(),
   completedAt: timestamp('completed_at'),
   filePath: text('file_path'),
@@ -119,7 +113,9 @@ export const reports = createTable('reports', {
 // Billing Periods
 export const billingPeriods = createTable('billing_periods', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id').references(() => users.id),
+  userId: uuid('user_id').references(() => users.id, {
+    onDelete: 'cascade',
+  }),
   startDate: timestamp('start_date'),
   endDate: timestamp('end_date'),
   totalUnits: numeric('total_units', { precision: 15, scale: 2 }),

@@ -9,7 +9,7 @@ export class LoggerMiddleware implements NestMiddleware {
     // const host = req.get('Host') || 'N/A';
 
     Logger.debug(`--------------------`);
-    Logger.debug(`Host: ${req.headers.origin}`);
+    // Logger.debug(`Host: ${req.headers.origin}`);
     Logger.debug(`Origin: ${req.originalUrl}`);
     // Logger.debug(`Referer: ${referer}`);
 

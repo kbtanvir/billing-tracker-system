@@ -32,13 +32,17 @@ services:
     container_name: ${CONTAINER_PREFIX}_postgres
     ports:
       - ${POSTGRES_PORT}:5432
+    environment:
+      POSTGRES_USER: ${POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB} 
     volumes:
       - pg_data:/var/lib/postgresql/data
     healthcheck:
       test:
         [
           "CMD-SHELL",
-          "pg_isready -U ${POSTGRES_USERNAME} -d ${POSTGRES_DB} -t 1",
+          "pg_isready -U ${POSTGRES_USERNAME}  -d ${POSTGRES_DB} -t 1",
         ]
       interval: 10s
       timeout: 10s
@@ -53,8 +57,7 @@ services:
           cpus: '1'
           memory: 520M
     container_name: ${CONTAINER_PREFIX}_redis
-    environment:
-      - REDIS_REPLICATION_MODE=master
+ 
     image: redis:7.2.6-alpine
     ports:
       - 6377:6377
@@ -66,12 +69,12 @@ services:
         "/usr/local/etc/redis/redis.conf",
       ]
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "redis-cli", "-p", "6377", "ping"]
       interval: 30s
       timeout: 10s
-      retries: 5
-      start_period: 5s
-    
+      retries: 3
+      start_period: 30s
+      
   # minio:
   #   <<: *default-resources 
   #   image: minio/minio:latest

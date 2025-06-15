@@ -19,7 +19,7 @@ import { QueueModule } from './modules/queue/queue.module';
 import { RedisModule } from './modules/redis/redis.module';
 import { S3Module } from './modules/s3/s3.module';
 import { SeederModule } from './modules/seed/seeder.module';
-import { UsersModule } from './modules/usage/usage.module';
+import { UsageModule } from './modules/usage/usage.module';
 
 @Module({
   imports: [
@@ -56,7 +56,7 @@ import { UsersModule } from './modules/usage/usage.module';
 
     DrizzleModule,
     // AuthModule,
-    UsersModule,
+    UsageModule,
     // DemoModule,
     S3Module,
     SeederModule,

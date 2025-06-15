@@ -1,12 +1,8 @@
-import {
-  ApiProperty,
-  IntersectionType,
-  OmitType,
-  PartialType,
-} from '@nestjs/swagger';
+import { ApiProperty, IntersectionType, PartialType } from '@nestjs/swagger';
 import {
   IsDateString,
   IsEnum,
+  IsISO8601,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -202,34 +198,43 @@ export class ReportRequestDto {
   @ApiProperty({
     description: 'Report format',
     enum: ReportFormatValues,
-    example: 'PDF',
   })
   @IsEnum(ReportFormatValues)
   @IsNotEmpty()
   format: ReportFormat;
 
   @ApiProperty({
-    description: 'Start date for the report period',
+    description: 'Start date for the report period (ISO 8601 format)',
     example: '2023-08-01T00:00:00Z',
+    type: 'string',
+    format: 'date-time',
     required: false,
   })
-  @IsDateString()
+  @IsISO8601()
   @IsOptional()
-  startDate?: string;
+  startDate?: Date;
 
   @ApiProperty({
-    description: 'End date for the report period',
+    description: 'End date for the report period (ISO 8601 format)',
     example: '2023-08-31T23:59:59Z',
+    type: 'date',
+    format: 'date-time',
     required: false,
   })
-  @IsDateString()
+  @IsISO8601()
   @IsOptional()
-  endDate?: string;
+  endDate?: Date;
 }
-export class ReportRequestBodyDto extends OmitType(ReportRequestDto, [
-  'userId',
-]) {}
+
 export class ReportStatusDto {
+  @ApiProperty({
+    description: 'User ID for the report',
+    example: '95b347fc-e6e9-4753-b4a5-b617f4cc5211',
+  })
+  @IsUUID()
+  @IsNotEmpty()
+  userId: string;
+
   @ApiProperty({
     description: 'Report job ID',
     example: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
@@ -253,7 +258,7 @@ export class ReportStatusDto {
   })
   @IsDateString()
   @IsNotEmpty()
-  createdAt: string;
+  createdAt: Date;
 
   @ApiProperty({
     description: 'Timestamp when the report was completed',
@@ -262,7 +267,7 @@ export class ReportStatusDto {
   })
   @IsDateString()
   @IsOptional()
-  completedAt?: string;
+  completedAt?: Date;
 
   @ApiProperty({
     description: 'Path to download the report',
@@ -307,7 +312,7 @@ export class UsageFilterQuery {
   })
   @IsDateString()
   @IsOptional()
-  startDate?: string;
+  startDate?: Date;
 
   @ApiProperty({
     description: 'Filter by date range (end)',
@@ -315,7 +320,7 @@ export class UsageFilterQuery {
   })
   @IsDateString()
   @IsOptional()
-  endDate?: string;
+  endDate?: Date;
 }
 
 export class PaginationQuery {

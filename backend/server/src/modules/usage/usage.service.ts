@@ -5,7 +5,6 @@ import { S3Service } from '../s3/s3.service';
 import {
   CreateUsageEventDto,
   GenerateReportResponse,
-  GetUserUsageResponse,
   ReportFormat,
   ReportRequestDto,
   UpdateUsageEventDto,
@@ -72,7 +71,7 @@ export class UsageService {
   }
 
   // ========== Usage Summary & Billing ==========
-  async getUserUsageSummary(userId: string): Promise<GetUserUsageResponse> {
+  async getUserUsageSummary(userId: string) {
     try {
       const summary = await this.repository.getUserUsageSummary(userId);
       this.logger.log(`Fetched usage summary for user ${userId}`);
@@ -90,7 +89,8 @@ export class UsageService {
 
       // TODO: Add invoice generation logic here
       this.logger.log(`Generated billing period for user ${userId}`);
-
+      // Queue the report generation
+      await this.queueService.addBillingPeriodJob(userId);
       return period;
     } catch (error: any) {
       this.logger.error(`Failed to generate billing: ${error.message}`);
@@ -119,7 +119,6 @@ export class UsageService {
         endDate: dto.endDate,
       });
 
-      this.logger.log(`Started report generation job ${response.jobId}`);
       return response;
     } catch (error: any) {
       this.logger.error(`Failed to start report generation: ${error.message}`);
@@ -249,7 +248,7 @@ export class UsageService {
     doc.moveDown();
 
     // Add report details
-    doc.fontSize(12).text(`Generated on: ${new Date().toISOString()}`);
+    doc.fontSize(12).text(`Generated on: ${new Date()}`);
     doc.moveDown();
 
     // Add usage data
@@ -288,7 +287,7 @@ export class UsageService {
         database: 'connected',
         queue: 'connected',
         storage: 'connected',
-        timestamp: new Date().toISOString(),
+        timestamp: new Date(),
       };
     } catch (error: any) {
       this.logger.error(`Health check failed: ${error.message}`);

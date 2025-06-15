@@ -14,8 +14,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   CreateUsageEventDto,
   GenerateReportResponse,
-  GetUserUsageResponse,
-  ReportRequestBodyDto,
+  ReportRequestDto,
   UsageQuery,
 } from './dto/index.dto';
 import { UsageService } from './usage.service';
@@ -34,9 +33,7 @@ export class UsageController {
 
   @Get(':userId')
   @ApiOperation({ summary: 'Get current usage and billing information' })
-  async getUserUsage(
-    @Param('userId') userId: string,
-  ): Promise<GetUserUsageResponse> {
+  async getUserUsage(@Param('userId') userId: string) {
     return await this.usageService.getUserUsageSummary(userId);
   }
 
@@ -51,7 +48,7 @@ export class UsageController {
   @ApiOperation({ summary: 'Generate a usage report (async)' })
   async generateReport(
     @Param('userId') userId: string,
-    @Body() dto: ReportRequestBodyDto,
+    @Body() dto: Omit<ReportRequestDto, 'userId'>,
   ): Promise<GenerateReportResponse> {
     return await this.usageService.generateReport({
       ...dto,
@@ -71,17 +68,5 @@ export class UsageController {
   @ApiOperation({ summary: 'Process monthly billing (admin only)' })
   async processBilling(@Param('userId') userId: string) {
     return await this.usageService.generateMonthlyBilling(userId);
-  }
-}
-
-@ApiTags('Health')
-@Controller('api/v1')
-export class HealthController {
-  constructor(private readonly usageService: UsageService) {}
-
-  @Get('health')
-  @ApiOperation({ summary: 'Service health check' })
-  async healthCheck() {
-    return await this.usageService.healthCheck();
   }
 }

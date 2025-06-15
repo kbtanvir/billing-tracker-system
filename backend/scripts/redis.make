@@ -2,7 +2,7 @@ redis.exec:
 	$(COMPOSE) exec redis sh
 
 redis.cli:
-	$(COMPOSE) exec redis redis-cli
+	$(COMPOSE) exec redis redis-cli -p 6377
 
 redis.up:
 	$(COMPOSE) up redis -d

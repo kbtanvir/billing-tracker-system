@@ -95,12 +95,12 @@ export class UsageTestSeeder {
             new Date().getFullYear(),
             new Date().getMonth(),
             1,
-          ).toISOString(),
+          ),
           currentPeriodEnd: new Date(
             new Date().getFullYear(),
             new Date().getMonth() + 1,
             0,
-          ).toISOString(),
+          ),
           totalUnits: '0',
         })),
       )

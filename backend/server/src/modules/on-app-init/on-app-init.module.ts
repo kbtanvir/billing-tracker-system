@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 
-import { UsersModule } from '../usage/usage.module';
+import { UsageModule } from '../usage/usage.module';
 
 @Module({
-  imports: [UsersModule],
+  imports: [UsageModule],
 })
 export class OnAppInitModule {
   constructor() {}

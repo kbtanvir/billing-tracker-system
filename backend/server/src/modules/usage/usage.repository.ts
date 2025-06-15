@@ -10,7 +10,6 @@ import {
 } from '../drizzle/schema';
 import {
   CreateUsageEventDto,
-  GenerateReportResponse,
   ReportRequestDto,
   ReportStatus,
   UpdateUsageEventDto,
@@ -106,7 +105,7 @@ export class UsageRepository {
       where: eq(reports.userId, userId),
     });
 
-    if (!summary || !report) {
+    if (!summary) {
       throw new Error('User usage summary not found');
     }
 
@@ -138,7 +137,7 @@ export class UsageRepository {
       overageUnits,
       overageFee,
       totalAmount,
-      jobId: report.id,
+      jobId: report?.id,
     };
   }
 
@@ -152,7 +151,7 @@ export class UsageRepository {
         .insert(userUsageSummaries)
         .values({
           userId,
-          currentPeriodEnd: this.getNextPeriodEndDate().toISOString(),
+          currentPeriodEnd: this.getNextPeriodEndDate(),
           totalUnits: '0',
         })
         .execute();
@@ -173,17 +172,12 @@ export class UsageRepository {
   }
 
   // ========== Reports ==========
-  async createReportJob(
-    dto: ReportRequestDto,
-  ): Promise<GenerateReportResponse> {
+  async createReportJob(dto: ReportRequestDto) {
     const [report] = await this.db.conn
       .insert(reports)
       .values({
-        userId: dto.userId,
-        format: dto.format,
+        ...dto,
         status: 'PENDING',
-        startDate: dto.startDate,
-        endDate: dto.endDate,
       })
       .returning();
 
@@ -240,10 +234,10 @@ export class UsageRepository {
         userId,
         startDate: summary.currentPeriodStart,
         endDate: summary.currentPeriodEnd,
-        totalUnits: summary.totalUnits.toString(), // Ensure numeric is string
+        totalUnits: summary.totalUnits, // Ensure numeric is string
         baseFee: billingPlan.baseFee,
-        overageFee: summary.overageFee.toString(), // Convert to string
-        totalAmount: summary.totalAmount.toString(), // Convert to string
+        overageFee: summary.overageFee, // Convert to string
+        totalAmount: summary.totalAmount, // Convert to string
       })
       .returning();
 
@@ -251,7 +245,7 @@ export class UsageRepository {
     await this.db.conn
       .update(userUsageSummaries)
       .set({
-        currentPeriodEnd: this.getNextPeriodEndDate().toISOString(),
+        currentPeriodEnd: this.getNextPeriodEndDate(),
         totalUnits: '0', // Reset as string
       })
       .where(eq(userUsageSummaries.userId, userId))

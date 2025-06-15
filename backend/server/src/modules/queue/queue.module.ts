@@ -2,14 +2,17 @@ import { BullModule } from '@nestjs/bull';
 import { Global, Module } from '@nestjs/common';
 import Redis from 'ioredis';
 import { QueueService } from './queue.service';
+import { UsageModule } from '../usage/usage.module';
+import { UsageRepository } from '../usage/usage.repository';
+import { BillingProcessor, ReportProcessor } from './queue.processor';
 
 @Global()
 @Module({
   imports: [
     BullModule.forRoot({
       redis: {
-        host: process.env.REDIS_HOST || 'localhost',
-        port: parseInt(process.env.REDIS_PORT, 10) || 6379, // Fixed default Redis port
+        host: process.env.REDIS_HOST,
+        port: parseInt(process.env.REDIS_PORT, 10), // Fixed default Redis port
       },
     }),
     BullModule.registerQueue(
@@ -21,19 +24,22 @@ import { QueueService } from './queue.service';
       },
       // Remove domain-management if not needed
     ),
+    UsageModule,
   ],
   providers: [
     {
       provide: 'REDIS_CLIENT',
       useFactory: () => {
         return new Redis({
-          host: process.env.REDIS_HOST || 'localhost',
-          port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+          host: process.env.REDIS_HOST,
+          port: parseInt(process.env.REDIS_PORT, 10),
         });
       },
     },
     QueueService,
-    // QueueProcessor,
+    ReportProcessor,
+    BillingProcessor,
+    UsageRepository,
   ],
   exports: [QueueService, 'REDIS_CLIENT'],
 })
