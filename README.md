@@ -49,5 +49,5 @@ make ps
 
 ## API and Consoles
 
-- API Documentation: [http://localhost:8080/docs](http://localhost:8081/docs)
+- API Documentation: [http://localhost:8081/docs](http://localhost:8081/docs)
 - MinIO Console: [http://localhost:9111](http://localhost:9111)
