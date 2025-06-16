@@ -57,7 +57,6 @@ import { SeederModule } from './modules/seed/seeder.module';
     DrizzleModule,
     UsageModule,
     S3Module,
-    SeederModule,
   ],
   controllers: [AppController],
   providers: [

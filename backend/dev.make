@@ -22,13 +22,13 @@ restart:
 	$(COMPOSE) up -d
 
 up.build:
-	$(COMPOSE) build --no-cache 
+	$(COMPOSE) build
 	$(COMPOSE) up -d 
+	@$(COMPOSE) exec server sh -c 'sleep 5 && pnpm db:push && pnpm seed'
 
 up.rebuild:
 	$(COMPOSE) down -v
 	$(COMPOSE) up --build -d
-
 down:
 	$(COMPOSE) down
 

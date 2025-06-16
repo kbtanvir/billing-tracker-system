@@ -200,7 +200,7 @@ export class UsageService {
       );
 
       // Generate download URL (adjust based on your S3 configuration)
-      const downloadUrl = `${this.configService.s3.endpoint}/${this.configService.s3.bucketId}/${s3Key}`;
+      const downloadUrl = `${this.configService.s3.domainName}/${this.configService.s3.bucketId}/${s3Key}`;
 
       // Update status to completed
       await this.repository.updateReportStatus({

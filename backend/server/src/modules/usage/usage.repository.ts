@@ -162,7 +162,7 @@ export class UsageRepository {
         .values({
           userId,
           currentPeriodStart: summary.currentPeriodStart,
-          currentPeriodEnd: this.getNextPeriodEndDate(),
+          currentPeriodEnd: this.getNextPeriodEndDate(summary.currentPeriodEnd),
           totalUnits: '0',
         })
         .execute();
@@ -253,7 +253,7 @@ export class UsageRepository {
       .update(userUsageSummaries)
       .set({
         currentPeriodStart: summary.currentPeriodEnd,
-        currentPeriodEnd: this.getNextPeriodEndDate(),
+        currentPeriodEnd: this.getNextPeriodEndDate(summary.currentPeriodEnd),
         totalUnits: '0',
       })
       .where(eq(userUsageSummaries.userId, userId))
@@ -262,6 +262,8 @@ export class UsageRepository {
     return {
       success: true,
       invoiceId: period.id,
+      startDate: period.startDate,
+      endDate: period.endDate,
       totalAmount,
       overageFee,
       baseFee: Number(billingPlan.baseFee),
@@ -270,14 +272,17 @@ export class UsageRepository {
     };
   }
 
-  private getNextPeriodEndDate(): Date {
-    const date = new Date();
-    date.setMonth(date.getMonth() + 1);
-    date.setDate(0); // Last day of next month
-    date.setHours(23, 59, 59, 999);
-    return date;
+  private getNextPeriodEndDate(startDate: Date): Date {
+    const endDate = new Date(startDate);
+    endDate.setMonth(endDate.getMonth() + 1);
+    // If we crossed a year boundary, adjust the year
+    if (endDate.getMonth() === 0 && startDate.getMonth() === 11) {
+      endDate.setFullYear(endDate.getFullYear() + 1);
+    }
+    // Set to last moment of the day
+    endDate.setHours(23, 59, 59, 999);
+    return endDate;
   }
-
   // ========== Additional Helper Methods ==========
   async getUserById(userId: string) {
     return await this.db.conn.query.users.findFirst({

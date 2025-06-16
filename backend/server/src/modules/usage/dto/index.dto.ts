@@ -162,11 +162,14 @@ export class ReportRequestEntity {
   @IsNotEmpty()
   format: ReportFormat;
 
-  @ApiProperty({ example: '2023-08-01T00:00:00Z', required: false })
+  @ApiProperty({ example: new Date(Date.now()).toISOString(), required: false })
   @IsOptional()
   startDate?: Date;
 
-  @ApiProperty({ example: '2023-08-31T23:59:59Z', required: false })
+  @ApiProperty({
+    example: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+    required: false,
+  })
   @IsOptional()
   endDate?: Date;
 }
@@ -254,13 +257,13 @@ export class UsageFilterEntity {
 
   @ApiProperty({ required: false })
   @IsDateString()
-  @IsOptional()
-  startDate?: Date;
+  @IsNotEmpty()
+  startDate: Date;
 
   @ApiProperty({ required: false })
   @IsDateString()
-  @IsOptional()
-  endDate?: Date;
+  @IsNotEmpty()
+  endDate: Date;
 }
 
 export class PaginationEntity {

@@ -13,8 +13,8 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { S3Service } from './s3.service';
 
-@ApiTags('r2')
-@Controller('r2')
+@ApiTags('s3')
+@Controller('s3')
 @ApiBearerAuth()
 export class S3Controller {
   constructor(private readonly s3Service: S3Service) {}

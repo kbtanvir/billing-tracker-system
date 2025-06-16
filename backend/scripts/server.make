@@ -14,10 +14,11 @@ server.logs:
 server.up:
 	@$(COMPOSE) up $(IMAGE_NAME) -d
 
-server.up.build:
-	@$(COMPOSE) up --build $(IMAGE_NAME) -d
-	@$(COMPOSE) exec $(IMAGE_NAME) sh -c 'pnpm db:push'
+server.seed:
 	@$(COMPOSE) exec $(IMAGE_NAME) sh -c 'pnpm seed'
+
+server.up.build: 
+	@$(COMPOSE) up --build $(IMAGE_NAME) -d
 
 server.down:
 	@$(COMPOSE) down $(IMAGE_NAME)

@@ -1,4 +1,3 @@
-export const APP_URL = process.env.APP_URL;
 export const TESTER_EMAIL1 = process.env.TESTER_EMAIL1;
 export const TESTER_PASSWORD1 = process.env.TESTER_PASSWORD1;
 export const TESTER_EMAIL2 = process.env.TESTER_EMAIL2;
