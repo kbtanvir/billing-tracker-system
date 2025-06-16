@@ -1,6 +1,6 @@
-# Simple hosting solution
+# "As Pay As You Go" billing system
 
-As pay as you go billing system. fully containerized. 
+As pay as you go billing system. fully containerized and deployable to any vps
 
 ## Technologies Used
 
@@ -12,9 +12,7 @@ As pay as you go billing system. fully containerized.
 
 ### Prerequisites
 
-- Docker and Docker Compose installed on your machine. 
-- Log into docker hub, generate a personal accesstoken
-- Login to docker hub with access token as password, you will need to do this only once
+- Docker and Docker Compose installed on your machine. for windows can use WSL.
 
 ### Steps
 
