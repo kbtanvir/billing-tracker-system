@@ -15,7 +15,10 @@ stats:
 	$(COMPOSE) stats
 
 up:
+	test -f server/.env || cp server/env.example server/.env
+	test -f server/.env.docker || cp server/env.docker.example server/.env.docker
 	$(COMPOSE) up -d
+	@$(COMPOSE) exec server sh -c 'sleep 5 && pnpm db:push && sleep 5 && pnpm seed'
 	
 restart:
 	$(COMPOSE) down -v
@@ -29,6 +32,7 @@ up.build:
 up.rebuild:
 	$(COMPOSE) down -v
 	$(COMPOSE) up --build -d
+
 down:
 	$(COMPOSE) down
 
@@ -46,5 +50,5 @@ kill.server.port.process:
 	fuser -k 8080/tcp
 
 local.ps:
-	$(COMPOSE) ps --format "table {{.Service}} 		{{.ID}}		{{.Ports}}	{{.Status}}"
+	$(COMPOSE) ps --format "table {{.Service}} 	{{.ID}}	{{.Ports}} {{.Status}}"
 
