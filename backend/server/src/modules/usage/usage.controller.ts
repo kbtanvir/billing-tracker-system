@@ -13,7 +13,7 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   CreateUsageEventDto,
-  ReportRequestDto,
+  ReportRequestBodyDto,
   UsageQuery,
 } from './dto/index.dto';
 import { UsageService } from './usage.service';
@@ -47,7 +47,7 @@ export class UsageController {
   @ApiOperation({ summary: 'Generate a usage report (async)' })
   async generateReport(
     @Param('userId') userId: string,
-    @Body() dto: Omit<ReportRequestDto, 'userId'>,
+    @Body() dto: ReportRequestBodyDto,
   ) {
     return await this.usageService.generateReport({
       ...dto,

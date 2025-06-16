@@ -8,10 +8,16 @@ import { users } from '../drizzle/schema';
 export class UserRepository {
   constructor(private readonly db: DrizzleService) {}
 
-  findById(id: string) {
-    return this.db.conn.query.users.findFirst({
+  async findById(id: string) {
+    const user = await this.db.conn.query.users.findFirst({
       where: eq(users.id, id),
     });
+
+    if (!user) {
+      throw new Error(`User   not found`);
+    }
+
+    return user;
   }
 
   async updateBillingPlan(userId: string, plan: string) {

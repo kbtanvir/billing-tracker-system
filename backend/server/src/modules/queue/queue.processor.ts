@@ -14,7 +14,7 @@ export class ReportProcessor {
   @Process('generate-report')
   async handleReportGeneration(
     job: Job<{
-      jobId: string;
+      reportId: string;
       userId: string;
       format: ReportFormat;
       startDate?: Date;
@@ -24,21 +24,10 @@ export class ReportProcessor {
     this.logger.log(`Starting report generation job ${job.id}`);
 
     try {
-      await this.usageService.addJobReport({
-        jobId: job.data.jobId,
-        userId: job.data.userId,
-        format: 'PDF',
-      });
-
       // Generate the report here
-      await this.usageService.processReportJob(job.data.jobId);
+      await this.usageService.processReportJob(job.data.reportId);
 
-      await this.usageService.updateReportStatus(job.data.jobId, 'COMPLETED');
-      // Store the report file
-
-      this.logger.warn(`Report generated successfully for job ${job.id}`);
-
-      // return { filePath }; // This will be available in job.returnvalue
+      return job.id;
     } catch (error) {
       this.logger.error(`Report generation failed for job ${job.id}:  `);
       throw error;
@@ -54,11 +43,11 @@ export class BillingProcessor {
 
   @Process('process-billing-period')
   async handleBillingPeriod(job: Job<{ userId: string }>) {
-    this.logger.log(
-      `Starting billing processing job ${job.id} for user ${job.data.userId}`,
-    );
-
     try {
+      this.logger.log(
+        `Starting billing processing job ${job.id} for user ${job.data.userId}`,
+      );
+      return true;
     } catch (error: any) {
       this.logger.error(
         `Billing processing failed for job ${job.id}: ${error.message}`,

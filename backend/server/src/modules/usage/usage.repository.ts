@@ -11,7 +11,7 @@ import {
 import {
   CreateUsageEventDto,
   ReportRequestDto,
-  ReportStatus,
+  ReportStatusDto,
   UpdateUsageEventDto,
   UsageQuery,
 } from './dto/index.dto';
@@ -100,9 +100,6 @@ export class UsageRepository {
 
   // ========== User Usage Summary ==========
   async getUserUsageSummary(userId: string) {
-    // First ensure user usage summary exists
-    await this.ensureUserUsageSummaryExists(userId);
-
     const summary = await this.db.conn.query.userUsageSummaries.findFirst({
       where: eq(userUsageSummaries.userId, userId),
       with: {
@@ -187,20 +184,14 @@ export class UsageRepository {
 
   // ========== Reports ==========
   async createReportJob(dto: ReportRequestDto) {
-    const [report] = await this.db.conn
-      .insert(reports)
-      .values({
-        ...dto,
-        status: 'PENDING',
-      })
-      .returning();
+    const [report] = await this.db.conn.insert(reports).values(dto).returning();
 
-    return { jobId: report.jobId };
+    return report;
   }
 
-  async getReportStatus(jobId: string) {
+  async getReportStatus(id: string) {
     const report = await this.db.conn.query.reports.findFirst({
-      where: eq(reports.jobId, jobId),
+      where: eq(reports.id, id),
     });
 
     if (!report) {
@@ -210,25 +201,20 @@ export class UsageRepository {
     return report;
   }
 
-  async updateReportStatus(
-    jobId: string,
-    status: ReportStatus,
-    filePath?: string,
-    error?: string,
-  ) {
-    await this.db.conn
+  async updateReportStatus(dto: ReportStatusDto) {
+    const [item] = await this.db.conn
       .update(reports)
       .set({
-        status,
-        filePath,
-        error,
+        ...dto,
         completedAt:
-          status === 'COMPLETED' || status === 'FAILED'
+          dto.status === 'COMPLETED' || dto.status === 'FAILED'
             ? new Date()
             : undefined,
       })
-      .where(eq(reports.jobId, jobId))
-      .execute();
+      .where(eq(reports.id, dto.id))
+      .returning();
+
+    return item;
   }
 
   // ========== Billing Periods ==========

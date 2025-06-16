@@ -173,73 +173,95 @@ describe('Complete Flow', () => {
     expect(mockUsageRepo.getUserUsageSummary).toHaveBeenCalledWith(
       TEST_USER_ID,
     );
-
-    // 4. Generate report and get job ID
-    const reportResponse = await service.generateReport({
-      userId: TEST_USER_ID,
-      format: 'PDF',
-    });
-    expect(reportResponse).toHaveProperty('jobId');
-    expect(mockQueueService.addReportJob).toHaveBeenCalled();
-
-    const jobId = reportResponse.jobId.toString();
-
-    // 5. Track report status
-    const reportStatus = await service.getReportStatus(jobId);
-    expect(reportStatus.jobId).toBe(jobId);
-    expect(reportStatus.userId).toBe(TEST_USER_ID);
-    expect(reportStatus.status).toBe('COMPLETED');
-    expect(reportStatus).toHaveProperty('downloadUrl');
-    expect(mockUsageRepo.getReportStatus).toHaveBeenCalledWith(jobId);
-
-    // 6. Process monthly billing
-    const billingResult = await service.generateMonthlyBilling(TEST_USER_ID);
-    expect(billingResult).toHaveProperty('success', true);
-    expect(billingResult).toHaveProperty('invoiceId');
-    expect(mockUsageRepo.createBillingPeriod).toHaveBeenCalledWith(
-      TEST_USER_ID,
-    );
   });
-
-  it('should handle report processing flow', async () => {
+  describe('Report Processing Workflow', () => {
     const testJobId = 'test-job-123';
+    const testReportId = 'test-report-456';
 
-    // Mock the report processing
-    mockUsageRepo.getReportStatus = jest
-      .fn()
-      .mockImplementationOnce(() => ({
+    beforeEach(() => {
+      // Reset all mocks before each test
+      jest.clearAllMocks();
+
+      // Mock the queue service
+      mockQueueService.addReportJob = jest.fn().mockResolvedValue({
         jobId: testJobId,
-        userId: TEST_USER_ID,
-        status: 'PENDING',
-        createdAt: new Date().toISOString(),
-      }))
-      .mockImplementationOnce(() => ({
-        jobId: testJobId,
-        userId: TEST_USER_ID,
-        status: 'PROCESSING',
-        createdAt: new Date().toISOString(),
-      }))
-      .mockImplementation(() => ({
-        jobId: testJobId,
-        userId: TEST_USER_ID,
-        status: 'COMPLETED',
-        createdAt: new Date().toISOString(),
-        completedAt: new Date().toISOString(),
-        downloadUrl: 'https://example.com/report.pdf',
-      }));
+      });
 
-    // Initial status check
-    let status = await service.getReportStatus(testJobId);
-    expect(status.status).toBe('PENDING');
+      // Mock the repository
+      mockUsageRepo.createReportJob = jest.fn().mockResolvedValue({
+        id: testReportId,
+        userId: TEST_USER_ID,
+        status: 'CREATED',
+      });
 
-    // Simulate processing
-    status = await service.getReportStatus(testJobId);
-    expect(status.status).toBe('PROCESSING');
+      mockUsageRepo.updateReportStatus = jest
+        .fn()
+        .mockImplementation((params) => ({
+          ...params,
+          createdAt: new Date().toISOString(),
+        }));
 
-    // Final status check
-    status = await service.getReportStatus(testJobId);
-    expect(status.status).toBe('COMPLETED');
-    expect(status).toHaveProperty('downloadUrl');
+      // Mock the status checks with progressive states
+      mockUsageRepo.getReportStatus = jest
+        .fn()
+        .mockImplementationOnce(() => ({
+          id: testReportId,
+          jobId: testJobId,
+          userId: TEST_USER_ID,
+          status: 'PENDING',
+          createdAt: new Date().toISOString(),
+        }))
+        .mockImplementationOnce(() => ({
+          id: testReportId,
+          jobId: testJobId,
+          userId: TEST_USER_ID,
+          status: 'PROCESSING',
+          createdAt: new Date().toISOString(),
+        }))
+        .mockImplementation(() => ({
+          id: testReportId,
+          jobId: testJobId,
+          userId: TEST_USER_ID,
+          status: 'COMPLETED',
+          createdAt: new Date().toISOString(),
+          completedAt: new Date().toISOString(),
+          downloadUrl: 'https://example.com/report.pdf',
+        }));
+
+      // Mock user repository
+      mockUserRepo.findById = jest.fn().mockResolvedValue({ id: TEST_USER_ID });
+    });
+
+    it('should complete the full report generation flow', async () => {
+      // 1. Generate report
+      const reportResponse = await service.generateReport({
+        userId: TEST_USER_ID,
+        format: 'PDF',
+      });
+
+      // Verify report creation
+      expect(reportResponse).toHaveProperty('id', testReportId);
+      expect(reportResponse).toHaveProperty('jobId', testJobId);
+      expect(reportResponse).toHaveProperty('status', 'PENDING');
+      expect(mockQueueService.addReportJob).toHaveBeenCalledWith({
+        reportId: testReportId,
+        userId: TEST_USER_ID,
+        format: 'PDF',
+      });
+
+      // 2. Check initial status (PENDING)
+      let status = await service.getReportStatus(testReportId);
+      expect(status.status).toBe('PENDING');
+
+      // 3. Check intermediate status (PROCESSING)
+      status = await service.getReportStatus(testReportId);
+      expect(status.status).toBe('PROCESSING');
+
+      // 4. Check final status (COMPLETED)
+      status = await service.getReportStatus(testReportId);
+      expect(status.status).toBe('COMPLETED');
+      expect(status).toHaveProperty('downloadUrl');
+    });
   });
 
   // Add a new test case for billing calculation

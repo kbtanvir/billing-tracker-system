@@ -1,8 +1,12 @@
-import { ApiProperty, IntersectionType, PartialType } from '@nestjs/swagger';
+import {
+  ApiProperty,
+  IntersectionType,
+  PartialType,
+  PickType,
+} from '@nestjs/swagger';
 import {
   IsDateString,
   IsEnum,
-  IsISO8601,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -219,7 +223,6 @@ export class ReportRequestDto {
     format: 'date-time',
     required: false,
   })
-  @IsISO8601()
   @IsOptional()
   startDate?: Date;
 
@@ -230,10 +233,15 @@ export class ReportRequestDto {
     format: 'date-time',
     required: false,
   })
-  @IsISO8601()
   @IsOptional()
   endDate?: Date;
 }
+
+export class ReportRequestBodyDto extends PickType(ReportRequestDto, [
+  'format',
+  'startDate',
+  'endDate',
+]) {}
 
 export class ReportStatusDto {
   @ApiProperty({
@@ -241,16 +249,24 @@ export class ReportStatusDto {
     example: '95b347fc-e6e9-4753-b4a5-b617f4cc5211',
   })
   @IsUUID()
-  @IsNotEmpty()
-  userId: string;
+  @IsOptional()
+  userId?: string;
 
   @ApiProperty({
     description: 'Report job ID',
     example: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
   })
   @IsUUID()
-  @IsNotEmpty()
-  jobId: string;
+  @IsOptional()
+  jobId?: string;
+
+  @ApiProperty({
+    description: 'Report job ID',
+    example: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+  })
+  @IsUUID()
+  @IsOptional()
+  id?: string;
 
   @ApiProperty({
     description: 'Current status of the report',
@@ -266,8 +282,8 @@ export class ReportStatusDto {
     example: '2023-08-15T12:00:00Z',
   })
   @IsDateString()
-  @IsNotEmpty()
-  createdAt: Date;
+  @IsOptional()
+  createdAt?: Date;
 
   @ApiProperty({
     description: 'Timestamp when the report was completed',
@@ -285,7 +301,7 @@ export class ReportStatusDto {
   })
   @IsString()
   @IsOptional()
-  downloadUrl?: string;
+  filePath?: string;
 
   @ApiProperty({
     description: 'Error message if report failed',

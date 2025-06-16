@@ -38,7 +38,6 @@ import { BillingProcessor, ReportProcessor } from './queue.processor';
     QueueService,
     ReportProcessor,
     BillingProcessor,
-    // UsageService,
   ],
   exports: [QueueService, 'REDIS_CLIENT'],
 })

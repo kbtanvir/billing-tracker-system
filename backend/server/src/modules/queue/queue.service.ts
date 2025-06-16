@@ -52,7 +52,7 @@ export class QueueService implements OnModuleInit {
   }
   // ========== Report Generation ==========
   async addReportJob(payload: {
-    jobId: string;
+    reportId: string;
     userId: string;
     format: ReportFormat;
     startDate?: Date;
@@ -68,10 +68,9 @@ export class QueueService implements OnModuleInit {
       removeOnFail: true,
     });
 
-    // Update status to QUEUED when job is first added
-
     this.logger.log(`Report job ${job.id} queued for user ${payload.userId}`);
-    return job.id;
+
+    return { jobId: job.id };
   }
 
   // ========== Billing Processing ==========

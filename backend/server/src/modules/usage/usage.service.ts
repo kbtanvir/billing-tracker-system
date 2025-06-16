@@ -6,7 +6,7 @@ import {
   CreateUsageEventDto,
   ReportFormat,
   ReportRequestDto,
-  ReportStatus,
+  ReportStatusDto,
   UpdateUsageEventDto,
   UsageQuery,
 } from './dto/index.dto';
@@ -92,46 +92,42 @@ export class UsageService {
     }
   }
 
-  async updateReportStatus(
-    jobId: string,
-    status: ReportStatus,
-    filePath?: string,
-    error?: string,
-  ) {
-    return await this.repository.updateReportStatus(
-      jobId,
-      status,
-      filePath,
-      error,
-    );
+  async updateReportStatus(dto: ReportStatusDto) {
+    return await this.repository.updateReportStatus(dto);
   }
+
   async addJobReport(dto: ReportRequestDto) {
     return await this.repository.createReportJob(dto);
   }
+
   // ========== Reports ==========
   async generateReport(dto: ReportRequestDto) {
     try {
       // Validate user exists
-      const user = await this.usersRepository.findById(dto.userId);
-
-      if (!user) {
-        throw new Error(`User ${dto.userId} not found`);
-      }
+      await this.usersRepository.findById(dto.userId);
 
       // Create report job
-
-      // Queue the report generation
-      const jobId = await this.queueService.addReportJob({
-        jobId: null,
+      const report = await this.repository.createReportJob({
         userId: dto.userId,
         format: dto.format,
         startDate: dto.startDate,
         endDate: dto.endDate,
       });
 
-      return {
-        jobId,
-      };
+      // Queue the report generation
+      const job = await this.queueService.addReportJob({
+        reportId: report.id,
+        userId: dto.userId,
+        format: dto.format,
+        startDate: dto.startDate,
+        endDate: dto.endDate,
+      });
+
+      return await this.repository.updateReportStatus({
+        id: report.id,
+        jobId: job.jobId.toString(),
+        status: 'PENDING',
+      });
     } catch (error: any) {
       this.logger.error(`Failed to start report generation: ${error.message}`);
       throw error;
@@ -147,13 +143,16 @@ export class UsageService {
     }
   }
 
-  async processReportJob(jobId: string) {
+  async processReportJob(reportId: string) {
     try {
       // Get report details
-      const report = await this.repository.getReportStatus(jobId);
+      const report = await this.repository.getReportStatus(reportId);
 
       // Update status to processing
-      await this.repository.updateReportStatus(jobId, 'PROCESSING');
+      await this.repository.updateReportStatus({
+        id: reportId,
+        status: 'PROCESSING',
+      });
 
       // Generate the report data
       const usageData = await this.repository.findUsageEvents({
@@ -185,7 +184,7 @@ export class UsageService {
 
       // Prepare S3 key
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const s3Key = `${report.userId}/${jobId}-${timestamp}.${fileExtension}`;
+      const s3Key = `${report.userId}/${reportId}-${timestamp}.${fileExtension}`;
 
       // Upload to S3
       await this.s3Service.saveObject(
@@ -201,19 +200,22 @@ export class UsageService {
       const downloadUrl = `${this.configService.s3.endpoint}/${this.configService.s3.bucketId}/${s3Key}`;
 
       // Update status to completed
-      await this.repository.updateReportStatus(jobId, 'COMPLETED', downloadUrl);
+      await this.repository.updateReportStatus({
+        id: reportId,
+        status: 'COMPLETED',
+        filePath: downloadUrl,
+      });
 
-      this.logger.log(`Completed report generation for job ${jobId}`);
+      this.logger.log(`Completed report generation for job ${reportId}`);
     } catch (error: any) {
       this.logger.error(
-        `Report generation failed for job ${jobId}: ${error.message}`,
+        `Report generation failed for job ${reportId}: ${error.message}`,
       );
-      await this.repository.updateReportStatus(
-        jobId,
-        'FAILED',
-        undefined,
-        error.message,
-      );
+      await this.repository.updateReportStatus({
+        id: reportId,
+        status: 'FAILED',
+        error: error.message,
+      });
       throw error;
     }
   }
@@ -260,15 +262,30 @@ export class UsageService {
     doc.moveDown();
 
     // Add report details
-    doc.fontSize(12).text(`Generated on: ${new Date()}`);
+    doc.fontSize(12).text(
+      `Generated on: ${new Date().toLocaleDateString('en-US', {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      })}`,
+    );
     doc.moveDown();
 
     // Add usage data
     doc.fontSize(14).text('Usage Events:');
     data.forEach((event) => {
+      const date = new Date(event.timestamp);
+
+      const dateOnly = date.toLocaleDateString('en-US', {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
       doc
         .fontSize(10)
-        .text(`${event.timestamp} - ${event.eventType}`)
+        .text(`${dateOnly} - ${event.eventType}`)
         .text(`Units: ${event.units} | Service: ${event.serviceId || 'N/A'}`);
       doc.moveDown(0.5);
     });
