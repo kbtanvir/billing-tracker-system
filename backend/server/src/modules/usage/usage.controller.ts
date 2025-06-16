@@ -19,7 +19,7 @@ import {
 import { UsageService } from './usage.service';
 
 @ApiTags('Usage')
-@Controller('usage')
+@Controller('v1/usage')
 export class UsageController {
   constructor(private readonly usageService: UsageService) {}
 
@@ -55,10 +55,10 @@ export class UsageController {
     });
   }
 
-  @Get('reports/status/:jobId')
+  @Get('reports/status/:reportId')
   @ApiOperation({ summary: 'Check report generation status' })
-  async getReportStatus(@Param('jobId') jobId: string) {
-    return await this.usageService.getReportStatus(jobId);
+  async getReportStatus(@Param('reportId') id: string) {
+    return await this.usageService.getReportStatus(id);
   }
 
   @Post('billing/:userId')

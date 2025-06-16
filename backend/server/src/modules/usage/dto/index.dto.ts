@@ -43,54 +43,8 @@ export const UsageEventTypeValues = [
 ] as const;
 export type UsageEventType = (typeof UsageEventTypeValues)[number];
 
-// ========== Core DTOs ==========
-export class UsageEventDto {
-  @ApiProperty({
-    description: 'User ID associated with the usage event',
-    example: '95b347fc-e6e9-4753-b4a5-b617f4cc5211',
-  })
-  @IsUUID()
-  @IsNotEmpty()
-  userId: string;
-
-  @ApiProperty({
-    description: 'Type of usage event',
-    enum: UsageEventTypeValues,
-    example: 'API_CALL',
-  })
-  @IsEnum(UsageEventTypeValues)
-  @IsNotEmpty()
-  eventType: UsageEventType;
-
-  @ApiProperty({
-    description: 'Number of units consumed',
-    example: 5,
-    minimum: 0,
-  })
-  @IsNumber()
-  @IsPositive()
-  @IsNotEmpty()
-  units: number;
-
-  @ApiProperty({
-    description: 'Optional metadata about the event',
-    example: { endpoint: '/api/users', method: 'GET' },
-    required: false,
-  })
-  @IsOptional()
-  metadata?: Record<string, any>;
-
-  @ApiProperty({
-    description: 'Service identifier',
-    example: 'user-api',
-    required: false,
-  })
-  @IsString()
-  @IsOptional()
-  serviceId?: string;
-}
-
-export class UserUsageSummaryDto {
+// ========== Core Entities ==========
+export class UsageEventEntity {
   @ApiProperty({
     description: 'User ID',
     example: '95b347fc-e6e9-4753-b4a5-b617f4cc5211',
@@ -99,203 +53,165 @@ export class UserUsageSummaryDto {
   @IsNotEmpty()
   userId: string;
 
+  @ApiProperty({ enum: UsageEventTypeValues, example: 'API_CALL' })
+  @IsEnum(UsageEventTypeValues)
+  @IsNotEmpty()
+  eventType: UsageEventType;
+
+  @ApiProperty({ example: 5, minimum: 0 })
+  @IsNumber()
+  @IsPositive()
+  @IsNotEmpty()
+  units: number;
+
   @ApiProperty({
-    description: 'Current period start timestamp',
-    example: '2023-08-01T00:00:00Z',
+    example: { endpoint: '/api/users', method: 'GET' },
+    required: false,
   })
+  @IsOptional()
+  metadata?: Record<string, any>;
+
+  @ApiProperty({ example: 'user-api', required: false })
+  @IsString()
+  @IsOptional()
+  serviceId?: string;
+}
+
+export class UserUsageSummaryEntity {
+  @ApiProperty({ example: '95b347fc-e6e9-4753-b4a5-b617f4cc5211' })
+  @IsUUID()
+  @IsNotEmpty()
+  userId: string;
+
+  @ApiProperty({ example: '2023-08-01T00:00:00Z' })
   @IsDateString()
   @IsNotEmpty()
   currentPeriodStart: string;
 
-  @ApiProperty({
-    description: 'Current period end timestamp',
-    example: '2023-08-31T23:59:59Z',
-  })
+  @ApiProperty({ example: '2023-08-31T23:59:59Z' })
   @IsDateString()
   @IsNotEmpty()
   currentPeriodEnd: string;
 
-  @ApiProperty({
-    description: 'Total units consumed in current period',
-    example: 1250.5,
-  })
+  @ApiProperty({ example: 1250.5 })
   @IsNumber()
   @IsPositive()
   @IsNotEmpty()
   totalUnits: number;
 
-  @ApiProperty({
-    description: 'Billing plan tier',
-    enum: PricingTierValues,
-    example: 'BASIC',
-  })
+  @ApiProperty({ enum: PricingTierValues, example: 'BASIC' })
   @IsEnum(PricingTierValues)
   @IsNotEmpty()
   currentBillingPlan: PricingTier;
 }
 
-export class BillingDetailsDto {
-  @ApiProperty({
-    description: 'Base fee for the billing plan',
-    example: 29.99,
-  })
+export class BillingDetailsEntity {
+  @ApiProperty({ example: 29.99 })
   @IsNumber()
   @IsPositive()
   @IsNotEmpty()
   baseFee: number;
 
-  @ApiProperty({
-    description: 'Included units in the plan',
-    example: 1000,
-  })
+  @ApiProperty({ example: 1000 })
   @IsNumber()
   @IsPositive()
   @IsNotEmpty()
   includedUnits: number;
 
-  @ApiProperty({
-    description: 'Overage rate per unit',
-    example: 0.01,
-  })
+  @ApiProperty({ example: 0.01 })
   @IsNumber()
   @IsPositive()
   @IsNotEmpty()
   overageRate: number;
 
-  @ApiProperty({
-    description: 'Total overage units',
-    example: 250,
-  })
+  @ApiProperty({ example: 250 })
   @IsNumber()
   @IsPositive()
   @IsNotEmpty()
   overageUnits: number;
 
-  @ApiProperty({
-    description: 'Total overage fee',
-    example: 2.5,
-  })
+  @ApiProperty({ example: 2.5 })
   @IsNumber()
   @IsPositive()
   @IsNotEmpty()
   overageFee: number;
 
-  @ApiProperty({
-    description: 'Total amount due',
-    example: 32.49,
-  })
+  @ApiProperty({ example: 32.49 })
   @IsNumber()
   @IsPositive()
   @IsNotEmpty()
   totalAmount: number;
 }
 
-export class ReportRequestDto {
+export class ReportRequestEntity {
   @ApiProperty({
-    description: 'User ID for the report',
-    example: '95b347fc-e6e9-4753-b4a5-b617f4cc5211',
+    example: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+    required: false,
   })
   @IsString()
-  @IsNotEmpty()
   @IsOptional()
   jobId?: string;
 
-  @ApiProperty({
-    description: 'User ID for the report',
-    example: '95b347fc-e6e9-4753-b4a5-b617f4cc5211',
-  })
+  @ApiProperty({ example: '95b347fc-e6e9-4753-b4a5-b617f4cc5211' })
   @IsUUID()
   @IsNotEmpty()
   userId: string;
 
-  @ApiProperty({
-    description: 'Report format',
-    enum: ReportFormatValues,
-  })
+  @ApiProperty({ enum: ReportFormatValues })
   @IsEnum(ReportFormatValues)
   @IsNotEmpty()
   format: ReportFormat;
 
-  @ApiProperty({
-    description: 'Start date for the report period (ISO 8601 format)',
-    example: '2023-08-01T00:00:00Z',
-    type: 'string',
-    format: 'date-time',
-    required: false,
-  })
+  @ApiProperty({ example: '2023-08-01T00:00:00Z', required: false })
   @IsOptional()
   startDate?: Date;
 
-  @ApiProperty({
-    description: 'End date for the report period (ISO 8601 format)',
-    example: '2023-08-31T23:59:59Z',
-    type: 'date',
-    format: 'date-time',
-    required: false,
-  })
+  @ApiProperty({ example: '2023-08-31T23:59:59Z', required: false })
   @IsOptional()
   endDate?: Date;
 }
 
-export class ReportRequestBodyDto extends PickType(ReportRequestDto, [
-  'format',
-  'startDate',
-  'endDate',
-]) {}
-
-export class ReportStatusDto {
+export class ReportStatusEntity {
   @ApiProperty({
-    description: 'User ID for the report',
     example: '95b347fc-e6e9-4753-b4a5-b617f4cc5211',
+    required: false,
   })
   @IsUUID()
   @IsOptional()
   userId?: string;
 
   @ApiProperty({
-    description: 'Report job ID',
     example: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+    required: false,
   })
   @IsUUID()
   @IsOptional()
   jobId?: string;
 
   @ApiProperty({
-    description: 'Report job ID',
     example: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+    required: false,
   })
   @IsUUID()
   @IsOptional()
   id?: string;
 
-  @ApiProperty({
-    description: 'Current status of the report',
-    enum: ReportStatusValues,
-    example: 'PROCESSING',
-  })
+  @ApiProperty({ enum: ReportStatusValues, example: 'PROCESSING' })
   @IsEnum(ReportStatusValues)
   @IsNotEmpty()
   status: ReportStatus;
 
-  @ApiProperty({
-    description: 'Timestamp when the report was created',
-    example: '2023-08-15T12:00:00Z',
-  })
+  @ApiProperty({ example: '2023-08-15T12:00:00Z', required: false })
   @IsDateString()
   @IsOptional()
   createdAt?: Date;
 
-  @ApiProperty({
-    description: 'Timestamp when the report was completed',
-    example: '2023-08-15T12:05:00Z',
-    required: false,
-  })
+  @ApiProperty({ example: '2023-08-15T12:05:00Z', required: false })
   @IsDateString()
   @IsOptional()
   completedAt?: Date;
 
   @ApiProperty({
-    description: 'Path to download the report',
     example: '/reports/user-123-august-2023.pdf',
     required: false,
   })
@@ -303,116 +219,83 @@ export class ReportStatusDto {
   @IsOptional()
   filePath?: string;
 
-  @ApiProperty({
-    description: 'Error message if report failed',
-    required: false,
-  })
+  @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
   error?: string;
 }
 
-// ========== Query/Filter DTOs ==========
-export class UsageFilterQuery {
-  @ApiProperty({
-    description: 'Filter by user ID',
-    required: false,
-  })
+// ========== Derived DTOs ==========
+export class CreateUsageEventDto extends UsageEventEntity {}
+export class UpdateUsageEventDto extends PartialType(UsageEventEntity) {}
+
+export class ReportRequestBodyDto extends PickType(ReportRequestEntity, [
+  'format',
+  'startDate',
+  'endDate',
+] as const) {}
+
+export class GetUserUsageResponse extends IntersectionType(
+  UserUsageSummaryEntity,
+  BillingDetailsEntity,
+) {}
+
+// ========== Filter/Query DTOs ==========
+export class UsageFilterEntity {
+  @ApiProperty({ required: false })
   @IsUUID()
   @IsOptional()
   userId?: string;
 
-  @ApiProperty({
-    description: 'Filter by event type',
-    enum: UsageEventTypeValues,
-    required: false,
-  })
+  @ApiProperty({ enum: UsageEventTypeValues, required: false })
   @IsEnum(UsageEventTypeValues)
   @IsOptional()
   eventType?: UsageEventType;
 
-  @ApiProperty({
-    description: 'Filter by date range (start)',
-    required: false,
-  })
+  @ApiProperty({ required: false })
   @IsDateString()
   @IsOptional()
   startDate?: Date;
 
-  @ApiProperty({
-    description: 'Filter by date range (end)',
-    required: false,
-  })
+  @ApiProperty({ required: false })
   @IsDateString()
   @IsOptional()
   endDate?: Date;
 }
 
-export class PaginationQuery {
-  @ApiProperty({
-    description: 'Number of items to skip',
-    required: false,
-    default: 0,
-  })
+export class PaginationEntity {
+  @ApiProperty({ required: false, default: 0 })
   @IsNumber()
   @IsOptional()
   offset?: number = 0;
 
-  @ApiProperty({
-    description: 'Number of items to return',
-    required: false,
-    default: 10,
-  })
+  @ApiProperty({ required: false, default: 10 })
   @IsNumber()
   @IsOptional()
   limit?: number = 10;
 }
 
 export class UsageQuery extends IntersectionType(
-  UsageFilterQuery,
-  PaginationQuery,
+  UsageFilterEntity,
+  PaginationEntity,
 ) {}
 
-// ========== Request/Response DTOs ==========
-export class CreateUsageEventDto extends UsageEventDto {}
-export class UpdateUsageEventDto extends PartialType(UsageEventDto) {}
-
-export class GetUserUsageResponse extends IntersectionType(
-  UserUsageSummaryDto,
-  BillingDetailsDto,
-) {}
-
+// ========== Response DTOs ==========
 export class GenerateReportResponse {
-  @ApiProperty({
-    description: 'Report job ID',
-    example: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-  })
+  @ApiProperty({ example: '3fa85f64-5717-4562-b3fc-2c963f66afa6' })
   jobId: string;
 }
 
-// ========== Health Check ==========
 export class HealthCheckResponse {
-  @ApiProperty({
-    description: 'Service status',
-    example: 'OK',
-  })
+  @ApiProperty({ example: 'OK' })
   status: string;
 
-  @ApiProperty({
-    description: 'Database connection status',
-    example: 'connected',
-  })
+  @ApiProperty({ example: 'connected' })
   database: string;
 
-  @ApiProperty({
-    description: 'Redis connection status',
-    example: 'connected',
-  })
+  @ApiProperty({ example: 'connected' })
   redis: string;
 
-  @ApiProperty({
-    description: 'Uptime in seconds',
-    example: 12345,
-  })
+  @ApiProperty({ example: 12345 })
   uptime: number;
 }

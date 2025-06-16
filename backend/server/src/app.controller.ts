@@ -1,15 +1,13 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
-import { Public } from './common/decorators/public-access.decorator';
+import { UsageService } from './modules/usage/usage.service';
 
-const version = '1.0.0.3';
-
-@Controller()
+@Controller('v1/healthcheck')
 export class AppController {
-  @ApiOperation({ summary: `check server health - ${version}` })
-  @Get('/health-check')
-  @Public()
-  getHello(): string {
-    return 'Hello World!';
+  constructor(private readonly usageService: UsageService) {}
+  @Get()
+  @ApiOperation({ summary: 'Check health of services' })
+  async healthCheck() {
+    return await this.usageService.healthCheck();
   }
 }

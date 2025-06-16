@@ -54,9 +54,7 @@ import { UsageModule } from './modules/usage/usage.module';
     }),
 
     DrizzleModule,
-    // AuthModule,
     UsageModule,
-    // DemoModule,
     S3Module,
   ],
   controllers: [AppController],
