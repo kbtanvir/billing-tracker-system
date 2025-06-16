@@ -32,7 +32,6 @@ As pay as you go billing system. fully containerized and deployable to any vps
    cd backend
    make up
    ```
- 
 
 ## Stopping Containers
 
@@ -41,22 +40,14 @@ To stop the running containers:
 make down
 ```
 
-## Viewing Available Commands
-
-To see available commands, use:
-```sh
-make [double press TAB]
-```
-If this does not work, check the `/scripts` folder.
-
 ## Checking Available Ports
 
 To see available ports along with container ID, port, created time, and status:
 ```sh
-make ps --format "table {{.ID}}	{{.Ports}}	{{.CreatedAt}}	{{.Status}}"
+make ps
 ```
 
 ## API and Consoles
 
-- API Documentation: [http://localhost:8080/docs](http://localhost:8080/docs)
+- API Documentation: [http://localhost:8080/docs](http://localhost:8081/docs)
 - MinIO Console: [http://localhost:9111](http://localhost:9111)
