@@ -39,7 +39,7 @@ jobs:
           TEST_FOCUS: 'unit'
       
       - name: Run Integration Tests
-        run: pnpm test -- usage.service.spec.ts --testNamePattern="Report processing flow"
+        run: pnpm test -- usage.service.spec.ts --testNamePattern="Report Processing Workflow"
         env:
           TEST_FOCUS: 'integration'
 
