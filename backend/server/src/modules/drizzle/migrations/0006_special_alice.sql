@@ -1,0 +1,1 @@
+ALTER TABLE "billing_plans" ADD CONSTRAINT "billing_plans_tier_unique" UNIQUE("tier");

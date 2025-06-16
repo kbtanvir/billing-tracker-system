@@ -22,7 +22,8 @@ restart:
 	$(COMPOSE) up -d
 
 up.build:
-	$(COMPOSE) up --build -d
+	$(COMPOSE) build --no-cache 
+	$(COMPOSE) up -d 
 
 up.rebuild:
 	$(COMPOSE) down -v

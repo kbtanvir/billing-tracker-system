@@ -10,119 +10,143 @@ export class UsageTestSeeder {
   async seedTestData() {
     console.log('🌱 Seeding test data...');
 
-    // 1. Create billing plans
-    const plans = await this.db.conn
-      .insert(billingPlans)
-      .values([
-        {
-          name: 'Free Plan',
-          tier: 'FREE',
-          description: 'Free tier with basic usage',
-          baseFee: '0.00',
-          includedUnits: 1000,
-          overageRate: '0.01',
-          isActive: true,
-        },
-        {
-          name: 'Basic Plan',
-          tier: 'BASIC',
-          description: 'Basic plan for small teams',
-          baseFee: '29.99',
-          includedUnits: 10000,
-          overageRate: '0.008',
-          isActive: true,
-        },
-        {
-          name: 'Pro Plan',
-          tier: 'PRO',
-          description: 'Professional plan for growing businesses',
-          baseFee: '99.99',
-          includedUnits: 50000,
-          overageRate: '0.005',
-          isActive: true,
-        },
-      ])
-      .returning();
+    // Process one entity at a time to reduce memory usage
+    try {
+      // 1. Billing Plans
+      const freePlan = await this.upsertBillingPlan({
+        name: 'Free Plan',
+        tier: 'FREE',
+        description: 'Free tier with basic usage',
+        baseFee: '0.00',
+        includedUnits: 1000,
+        overageRate: '0.01',
+        isActive: true,
+      });
 
-    console.log('✅ Billing plans created');
+      const basicPlan = await this.upsertBillingPlan({
+        name: 'Basic Plan',
+        tier: 'BASIC',
+        description: 'Basic plan for small teams',
+        baseFee: '29.99',
+        includedUnits: 10000,
+        overageRate: '0.008',
+        isActive: true,
+      });
 
-    // 2. Create test users
-    const testUsers = await this.db.conn
-      .insert(users)
-      .values([
-        {
-          email: 'testuser1@example.com',
-          firstName: 'John',
-          lastName: 'Doe',
-          fullname: 'John Doe',
-          password: '$2b$10$hashedpassword', // Use proper hashing in real app
-          currentBillingPlan: 'FREE',
-          emailVerified: true,
-          status: 'active',
-        },
-        {
-          email: 'testuser2@example.com',
-          firstName: 'Jane',
-          lastName: 'Smith',
-          fullname: 'Jane Smith',
-          password: '$2b$10$hashedpassword',
-          currentBillingPlan: 'BASIC',
-          emailVerified: true,
-          status: 'active',
-        },
-        {
-          email: 'admin@example.com',
-          firstName: 'Admin',
-          lastName: 'User',
-          fullname: 'Admin User',
-          password: '$2b$10$hashedpassword',
-          currentBillingPlan: 'PRO',
-          emailVerified: true,
-          status: 'active',
-        },
-      ])
-      .returning();
+      const proPlan = await this.upsertBillingPlan({
+        name: 'Pro Plan',
+        tier: 'PRO',
+        description: 'Professional plan for growing businesses',
+        baseFee: '99.99',
+        includedUnits: 50000,
+        overageRate: '0.005',
+        isActive: true,
+      });
 
-    console.log('✅ Test users created');
+      const plans = [freePlan, basicPlan, proPlan];
+      console.log('✅ Billing plans upserted');
 
-    // 3. Create usage summaries for users
-    const summaries = await this.db.conn
-      .insert(userUsageSummaries)
-      .values(
-        testUsers.map((user) => ({
-          userId: user.id,
-          currentPeriodStart: new Date(
-            new Date().getFullYear(),
-            new Date().getMonth(),
-            1,
-          ),
-          currentPeriodEnd: new Date(
-            new Date().getFullYear(),
-            new Date().getMonth() + 1,
-            0,
-          ),
-          totalUnits: '0',
-        })),
-      )
-      .returning();
+      // 2. Users
+      const user1 = await this.upsertUser({
+        email: 'testuser1@example.com',
+        firstName: 'John',
+        lastName: 'Doe',
+        fullname: 'John Doe',
+        password: '$2b$10$hashedpassword',
+        currentBillingPlan: 'FREE',
+        emailVerified: true,
+        status: 'active',
+      });
 
-    console.log('✅ User usage summaries created');
+      const user2 = await this.upsertUser({
+        email: 'testuser2@example.com',
+        firstName: 'Jane',
+        lastName: 'Smith',
+        fullname: 'Jane Smith',
+        password: '$2b$10$hashedpassword',
+        currentBillingPlan: 'BASIC',
+        emailVerified: true,
+        status: 'active',
+      });
 
-    return {
-      users: testUsers,
-      plans,
-      summaries,
-    };
+      const user3 = await this.upsertUser({
+        email: 'admin@example.com',
+        firstName: 'Admin',
+        lastName: 'User',
+        fullname: 'Admin User',
+        password: '$2b$10$hashedpassword',
+        currentBillingPlan: 'PRO',
+        emailVerified: true,
+        status: 'active',
+      });
+
+      const testUsers = [user1, user2, user3];
+      console.log('✅ Test users upserted');
+
+      // 3. Usage Summaries
+      const summaries = await Promise.all(
+        testUsers.map((user) => this.upsertUsageSummary(user)),
+      );
+      console.log('✅ User usage summaries upserted');
+
+      return { users: testUsers, plans, summaries };
+    } catch (error) {
+      console.error('❌ Seeding failed:', error);
+      throw error;
+    }
   }
 
-  async clearTestData() {
-    console.log('🧹 Clearing test data...');
+  private async upsertBillingPlan(data) {
+    return (
+      await this.db.conn
+        .insert(billingPlans)
+        .values(data)
+        .onConflictDoUpdate({
+          target: billingPlans.tier,
+          set: data,
+        })
+        .returning()
+    )[0];
+  }
 
-    // Clear in reverse order due to foreign key constraints
-    await this.db.conn.delete(userUsageSummaries);
-    await this.db.conn.delete(users);
-    await this.db.conn.delete(billingPlans);
+  private async upsertUser(data) {
+    return (
+      await this.db.conn
+        .insert(users)
+        .values(data)
+        .onConflictDoUpdate({
+          target: users.email,
+          set: data,
+        })
+        .returning()
+    )[0];
+  }
 
-    console.log('✅ Test data cleared');
+  private async upsertUsageSummary(user) {
+    const summaryData = {
+      userId: user.id,
+      currentPeriodStart: new Date(
+        new Date().getFullYear(),
+        new Date().getMonth(),
+        1,
+      ),
+      currentPeriodEnd: new Date(
+        new Date().getFullYear(),
+        new Date().getMonth() + 1,
+        0,
+      ),
+      totalUnits: '0',
+    };
+
+    return (
+      await this.db.conn
+        .insert(userUsageSummaries)
+        .values(summaryData)
+        .onConflictDoUpdate({
+          target: userUsageSummaries.userId,
+          set: summaryData,
+        })
+        .returning()
+    )[0];
   }
 }

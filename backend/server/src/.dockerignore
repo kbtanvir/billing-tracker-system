@@ -1,0 +1,18 @@
+# Node.js modules (to be installed inside the Docker container)
+node_modules/
+
+# Local data directories
+/.data
+/files
+
+# Compiled output
+/dist
+
+# Environment files (if you don't want to include them in the image)
+#.env
+
+# Other potential exclusions
+.git/
+*.log
+npm-debug.log
+yarn-error.log

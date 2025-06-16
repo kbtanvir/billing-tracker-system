@@ -22,6 +22,11 @@ import { UsageService } from './usage.service';
 @Controller('v1/usage')
 export class UsageController {
   constructor(private readonly usageService: UsageService) {}
+  @Get('users')
+  @ApiOperation({ summary: 'Get users' })
+  async getAllUsers() {
+    return await this.usageService.getAll();
+  }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)

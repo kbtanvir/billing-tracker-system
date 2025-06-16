@@ -19,6 +19,7 @@ import { QueueModule } from './modules/queue/queue.module';
 import { RedisModule } from './modules/redis/redis.module';
 import { S3Module } from './modules/s3/s3.module';
 import { UsageModule } from './modules/usage/usage.module';
+import { SeederModule } from './modules/seed/seeder.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { UsageModule } from './modules/usage/usage.module';
     DrizzleModule,
     UsageModule,
     S3Module,
+    SeederModule,
   ],
   controllers: [AppController],
   providers: [

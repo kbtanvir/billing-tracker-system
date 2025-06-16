@@ -86,7 +86,7 @@ export const userUsageSummaries = createTable('user_usage_summaries', {
 export const billingPlans = createTable('billing_plans', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name'),
-  tier: pricingTierEnum('tier'),
+  tier: pricingTierEnum('tier').unique(),
   description: text('description'),
   baseFee: numeric('base_fee', { precision: 10, scale: 2 }),
   includedUnits: integer('included_units'),

@@ -5,8 +5,8 @@ import { S3Service } from '../s3/s3.service';
 import {
   CreateUsageEventDto,
   ReportFormat,
-  ReportRequestDto,
-  ReportStatusDto,
+  ReportRequestEntity,
+  ReportStatusEntity,
   UpdateUsageEventDto,
   UsageQuery,
 } from './dto/index.dto';
@@ -25,6 +25,9 @@ export class UsageService {
     private readonly configService: ConfigService,
   ) {}
 
+  async getAll() {
+    return await this.usersRepository.getAll();
+  }
   // ========== Usage Events ==========
   async createUsageEvent(dto: CreateUsageEventDto) {
     const userId = dto.userId;
@@ -92,16 +95,16 @@ export class UsageService {
     }
   }
 
-  async updateReportStatus(dto: ReportStatusDto) {
+  async updateReportStatus(dto: ReportStatusEntity) {
     return await this.repository.updateReportStatus(dto);
   }
 
-  async addJobReport(dto: ReportRequestDto) {
+  async addJobReport(dto: ReportRequestEntity) {
     return await this.repository.createReportJob(dto);
   }
 
   // ========== Reports ==========
-  async generateReport(dto: ReportRequestDto) {
+  async generateReport(dto: ReportRequestEntity) {
     try {
       // Validate user exists
       await this.usersRepository.findById(dto.userId);

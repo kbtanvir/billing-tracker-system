@@ -16,6 +16,8 @@ server.up:
 
 server.up.build:
 	@$(COMPOSE) up --build $(IMAGE_NAME) -d
+	@$(COMPOSE) exec $(IMAGE_NAME) sh -c 'pnpm db:push'
+	@$(COMPOSE) exec $(IMAGE_NAME) sh -c 'pnpm seed'
 
 server.down:
 	@$(COMPOSE) down $(IMAGE_NAME)

@@ -27,6 +27,16 @@ echo "Creating and configuring bucket..."
  
 # /usr/bin/mc anonymous set-json /tmp/cors.json s3/${S3_BUCKET_ID}
 
-echo "Minio cli is ready"
 
-tail -f /dev/null
+# Generate access keys for the application user
+echo "Generating access keys..."
+
+/usr/bin/mc admin accesskey create s3 "${APP_USER}" \
+    --access-key "${S3_ACCESS_KEY}" \
+    --secret-key "${S3_SECRET_KEY}" || true  # Ignore failure
+    
+echo "MinIO configuration complete!"
+ 
+ 
+
+# tail -f /dev/null

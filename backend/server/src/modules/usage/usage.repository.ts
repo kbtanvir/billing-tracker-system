@@ -10,8 +10,8 @@ import {
 } from '../drizzle/schema';
 import {
   CreateUsageEventDto,
-  ReportRequestDto,
-  ReportStatusDto,
+  ReportRequestEntity,
+  ReportStatusEntity,
   UpdateUsageEventDto,
   UsageQuery,
 } from './dto/index.dto';
@@ -183,7 +183,7 @@ export class UsageRepository {
   }
 
   // ========== Reports ==========
-  async createReportJob(dto: ReportRequestDto) {
+  async createReportJob(dto: ReportRequestEntity) {
     const [report] = await this.db.conn.insert(reports).values(dto).returning();
 
     return report;
@@ -201,7 +201,7 @@ export class UsageRepository {
     return report;
   }
 
-  async updateReportStatus(dto: ReportStatusDto) {
+  async updateReportStatus(dto: ReportStatusEntity) {
     const [item] = await this.db.conn
       .update(reports)
       .set({
