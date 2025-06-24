@@ -17,11 +17,13 @@ import {
   UsageQuery,
 } from './dto/index.dto';
 import { UsageService } from './usage.service';
+import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('Usage')
 @Controller('v1/usage')
 export class UsageController {
   constructor(private readonly usageService: UsageService) {}
+
   @Get('users')
   @ApiOperation({ summary: 'Get users' })
   async getAllUsers() {
@@ -66,6 +68,7 @@ export class UsageController {
     return await this.usageService.getReportStatus(id);
   }
 
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Post('billing/:userId')
   @Roles(UserRole.ADMIN)
   @HttpCode(HttpStatus.ACCEPTED)

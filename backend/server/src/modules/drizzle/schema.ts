@@ -44,7 +44,7 @@ export const users = createTable('user', {
   password: text('password'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').$onUpdate(() => new Date()),
-  roleId: uuid('role_id'),
+  roleId: text('role_id'),
   status: text('status'),
   emailVerified: boolean('is_verified'),
   isBanned: boolean('is_banned'),

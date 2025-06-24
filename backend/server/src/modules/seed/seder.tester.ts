@@ -56,6 +56,7 @@ export class UsageTestSeeder {
         currentBillingPlan: 'FREE',
         emailVerified: true,
         status: 'active',
+        roleId: 'USER',
       });
 
       const user2 = await this.upsertUser({
@@ -67,6 +68,7 @@ export class UsageTestSeeder {
         currentBillingPlan: 'BASIC',
         emailVerified: true,
         status: 'active',
+        roleId: 'USER',
       });
 
       const user3 = await this.upsertUser({
@@ -78,6 +80,7 @@ export class UsageTestSeeder {
         currentBillingPlan: 'PRO',
         emailVerified: true,
         status: 'active',
+        roleId: 'ADMIN',
       });
 
       const testUsers = [user1, user2, user3];

@@ -40,3 +40,4 @@ lerna-debug.log*
 /ormconfig.json
 /api-client
 *.rest
+migrations

@@ -160,8 +160,8 @@ export class UsageService {
       // Generate the report data
       const usageData = await this.repository.findUsageEvents({
         userId: report.userId,
-        startDate: report.startDate,
-        endDate: report.endDate,
+        startDate: report.startDate.toISOString(),
+        endDate: report.endDate.toISOString(),
       });
 
       // Generate the report file

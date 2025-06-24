@@ -255,15 +255,18 @@ export class UsageFilterEntity {
   @IsOptional()
   eventType?: UsageEventType;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ example: new Date(Date.now()).toISOString(), required: false })
   @IsDateString()
   @IsNotEmpty()
-  startDate: Date;
+  startDate: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({
+    example: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+    required: false,
+  })
   @IsDateString()
   @IsNotEmpty()
-  endDate: Date;
+  endDate: string;
 }
 
 export class PaginationEntity {

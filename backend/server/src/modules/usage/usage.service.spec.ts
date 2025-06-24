@@ -159,8 +159,8 @@ describe('Complete Flow', () => {
       userId: TEST_USER_ID,
       offset: 0,
       limit: 10,
-      startDate: new Date(Date.now()),
-      endDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+      startDate: new Date(Date.now()).toISOString(),
+      endDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
     };
 
     const events = await service.getUsageEvents(query);

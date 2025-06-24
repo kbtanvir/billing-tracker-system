@@ -19,15 +19,21 @@ import { QueueModule } from './modules/queue/queue.module';
 import { RedisModule } from './modules/redis/redis.module';
 import { S3Module } from './modules/s3/s3.module';
 import { UsageModule } from './modules/usage/usage.module';
+import { RolesGuard } from './guards/roles.guard';
+import { UserRepository } from './modules/usage/users.repository';
 
 @Module({
   imports: [
-    ThrottlerModule.forRoot([
-      {
-        ttl: 100,
-        limit: 100,
-      },
-    ]),
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: () => [
+        {
+          ttl: 60000,
+          limit: 10000,
+        },
+      ],
+    }),
     ConfigModule,
     RedisModule,
     QueueModule,
@@ -59,6 +65,11 @@ import { UsageModule } from './modules/usage/usage.module';
   ],
   controllers: [AppController],
   providers: [
+    UserRepository,
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,

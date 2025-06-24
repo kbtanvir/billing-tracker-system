@@ -50,6 +50,13 @@
       "when": 1750075983325,
       "tag": "0006_special_alice",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1750768838501,
+      "tag": "0007_cooing_demogoblin",
+      "breakpoints": true
     }
   ]
 }
