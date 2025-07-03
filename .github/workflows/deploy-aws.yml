@@ -1,0 +1,27 @@
+name: Deploy to AWS EC2
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: SSH into EC2 and Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.AWS_EC2_IP }}
+          username: ubuntu  # Default AWS EC2 user
+          key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/ubuntu/your-project
+            git pull origin main
+            make up.build
