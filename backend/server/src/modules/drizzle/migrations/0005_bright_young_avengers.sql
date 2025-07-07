@@ -1,1 +1,0 @@
-ALTER TABLE "user_usage_summaries" ALTER COLUMN "current_period_start" DROP DEFAULT;
