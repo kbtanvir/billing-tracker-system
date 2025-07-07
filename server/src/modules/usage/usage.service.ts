@@ -84,6 +84,16 @@ export class UsageService {
       throw error;
     }
   }
+  async resetUsageSummary(userId: string) {
+    try {
+      const summary = await this.repository.resetUsageSummary(userId);
+      this.logger.log(`Fetched usage summary for user ${userId}`);
+      return summary;
+    } catch (error: any) {
+      this.logger.error(`Failed to get usage summary: ${error.message}`);
+      throw error;
+    }
+  }
 
   async generateMonthlyBilling(userId: string) {
     try {

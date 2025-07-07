@@ -18,7 +18,7 @@ export class UsageTestSeeder {
         tier: 'FREE',
         description: 'Free tier with basic usage',
         baseFee: '0.00',
-        includedUnits: 1000,
+        includedUnits: 10,
         overageRate: '0.01',
         isActive: true,
       });
@@ -28,7 +28,7 @@ export class UsageTestSeeder {
         tier: 'BASIC',
         description: 'Basic plan for small teams',
         baseFee: '29.99',
-        includedUnits: 10000,
+        includedUnits: 20,
         overageRate: '0.008',
         isActive: true,
       });
@@ -38,7 +38,7 @@ export class UsageTestSeeder {
         tier: 'PRO',
         description: 'Professional plan for growing businesses',
         baseFee: '99.99',
-        includedUnits: 50000,
+        includedUnits: 50,
         overageRate: '0.005',
         isActive: true,
       });

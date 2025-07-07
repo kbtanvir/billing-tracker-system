@@ -9,6 +9,7 @@ import {
   Param,
   Post,
   Query,
+  Delete,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
@@ -41,6 +42,12 @@ export class UsageController {
   @ApiOperation({ summary: 'Get current usage and billing information' })
   async getUserUsage(@Param('userId') userId: string) {
     return await this.usageService.getUserUsageSummary(userId);
+  }
+
+  @Delete(':userId')
+  @ApiOperation({ summary: 'Get current usage and billing information' })
+  async resetUsage(@Param('userId') userId: string) {
+    return await this.usageService.resetUsageSummary(userId);
   }
 
   @Get()

@@ -150,6 +150,53 @@ export class UsageRepository {
     };
   }
 
+  async resetUsageSummary(userId: string) {
+    // Start a transaction to ensure all operations succeed or fail together
+    await this.db.conn.transaction(async (tx) => {
+      // Delete all usage events for the user
+      await tx
+        .delete(usageEvents)
+        .where(eq(usageEvents.userId, userId))
+        .execute();
+
+      // Delete all reports for the user
+      await tx.delete(reports).where(eq(reports.userId, userId)).execute();
+
+      await tx
+        .delete(billingPeriods)
+        .where(eq(reports.userId, userId))
+        .execute();
+
+      // Reset the user's usage summary
+      const summary = await tx.query.userUsageSummaries.findFirst({
+        where: eq(userUsageSummaries.userId, userId),
+      });
+
+      if (summary) {
+        await tx
+          .update(userUsageSummaries)
+          .set({
+            totalUnits: '0',
+            currentPeriodStart: new Date(), // reset to current date
+            currentPeriodEnd: this.getNextPeriodEndDate(new Date()),
+          })
+          .where(eq(userUsageSummaries.userId, userId))
+          .execute();
+      } else {
+        // Create a new summary if one doesn't exist
+        await tx
+          .insert(userUsageSummaries)
+          .values({
+            userId,
+            totalUnits: '0',
+            currentPeriodStart: new Date(),
+            currentPeriodEnd: this.getNextPeriodEndDate(new Date()),
+          })
+          .execute();
+      }
+    });
+  }
+
   private async ensureUserUsageSummaryExists(userId: string) {
     const exists = await this.db.conn.query.userUsageSummaries.findFirst({
       where: eq(userUsageSummaries.userId, userId),
